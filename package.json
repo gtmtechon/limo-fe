@@ -6,7 +6,9 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "start": "serve -s dist -p ${PORT:-8080}"
+    "start": "serve -s dist -p ${PORT:-8080}",
+    "start-server": "node server.js",
+     "postinstall": "npm run build"
   },
   "dependencies": {
     "axios": "^1.x.x",
