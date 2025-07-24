@@ -26,8 +26,8 @@ jobs:
       - name: npm install, build, and test
         run: |
           npm install
-          npm run build # dist 폴더 생성
-          # npm run test --if-present # 테스트를 원하면 주석 해제
+          npm run build --if-present
+          npm run test --if-present
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -51,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_92611FBE28A4408281ED154C236692A9 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_43619FA7582D4A149126CBEF9EB60599 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4E804E3541FB47E792B4237E89470073 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8A50FB017BCE4BD19CDAD3B91D028700 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6843852CBB5C4EB6B37011F218E91487 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6B70F4B4B167459595620E811523039F }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
