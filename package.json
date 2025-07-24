@@ -28,7 +28,8 @@
     "@vue/eslint-config-standard": "^8.0.0",
     "eslint": "^8.x.x",
     "eslint-plugin-vue": "^9.x.x",
-    "prettier": "^2.x.x"
+    "prettier": "^2.x.x",
+     "serve": "^14.2.3"
   },
   "babel": {
     "presets": [
