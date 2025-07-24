@@ -1,0 +1,82 @@
+/* src/assets/global.css */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f4f8;
+    color: #334155;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+.nav-link {
+    padding: 0.75rem 1.25rem; /* 이 부분을 변경 */
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* DaisyUI가 card, btn, input, select, table, tabs 등의 스타일을 제공하므로,
+   기존의 중복되거나 충돌하는 스타일은 제거하거나 DaisyUI 클래스 사용을 우선합니다. */
+
+/* .card 스타일은 DaisyUI의 card 클래스로 대체되므로, 여기서는 최소한의 기본만 유지 */
+.card {
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* 네비게이션 링크 스타일 (DaisyUI tabs 클래스로 대체됨) */
+/* .nav-link, .nav-link:hover, .nav-link.active 스타일은 이제 DaisyUI의
+   .tab, .tab:hover, .tab-active 클래스로 대체되므로 제거합니다. */
+
+/* 입력 필드 스타일 (DaisyUI input, select, textarea 클래스로 대체됨) */
+input, select, textarea {
+    /* @apply input input-bordered w-full; */ /* DaisyUI input 스타일 적용 */
+    /* 기존 스타일과 충돌 방지를 위해 @apply 대신 직접 Tailwind 클래스 사용 또는 제거 */
+}
+/* select 스타일은 DaisyUI의 select 클래스로 대체됨 */
+textarea {
+    /* @apply textarea textarea-bordered w-full; */ /* DaisyUI textarea 스타일 적용 */
+}
+
+/* 테이블 스타일 (DaisyUI table 클래스로 대체됨) */
+table {
+    /* @apply table w-full; */ /* DaisyUI table 스타일 적용 */
+}
+th, td {
+    /* @apply p-3 border border-base-200; */ /* DaisyUI 테이블 셀 스타일 조정 */
+    /* text-align: left; */
+}
+th {
+    /* @apply bg-base-200 font-semibold; */ /* DaisyUI 테이블 헤더 배경색 및 폰트 조정 */
+}
+
+#map {
+    height: 500px;
+    width: 100%;
+    border-radius: 0.75rem;
+}
+
+/* 모달 스타일 (DaisyUI modal 클래스로 대체됨) */
+.modal {
+    @apply fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50;
+}
+.modal-content {
+    @apply bg-white p-6 rounded-box shadow-xl max-w-lg w-full mx-4;
+}
+
+/* 메시지 박스 스타일 */
+.message-box {
+    @apply fixed top-4 right-4 z-50 p-4 rounded-box shadow-lg text-white;
+}
+.message-box.success {
+    @apply bg-green-500;
+}
+.message-box.error {
+    @apply bg-red-500;
+}
+.message-box.info {
+    background-color: #3b82f6; /* Tailwind's bg-blue-500 */
+}

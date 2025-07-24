@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>호수 수질 관리 시스템</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #334155;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .nav-link {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .nav-link:hover {
+            background-color: #e2e8f0;
+        }
+        .nav-link.active {
+            background-color: #3b82f6;
+            color: #ffffff;
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        input, select, textarea {
+            border: 1px solid #cbd5e0;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 0.75rem;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <!-- 사용자 인증 정보 표시 -->
+        <div class="card flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">호수 수질 관리 시스템</h1>
+            <div v-if="userId" class="text-gray-600">
+                사용자 ID: <span class="font-semibold">{{ userId }}</span>
+            </div>
+            <div v-else class="text-gray-600">
+                인증 중...
+            </div>
+        </div>
+
+        <!-- 네비게이션 -->
+        <nav class="card flex space-x-4 p-4 mb-6">
+            <button @click="currentPage = 'device-management'" :class="{'nav-link': true, 'active': currentPage === 'device-management'}">디바이스 관리</button>
+            <button @click="currentPage = 'device-status'" :class="{'nav-link': true, 'active': currentPage === 'device-status'}">디바이스 상태</button>
+            <button @click="currentPage = 'robot-location'" :class="{'nav-link': true, 'active': currentPage === 'robot-location'}">로봇 위치 추적</button>
+            <button @click="currentPage = 'sensor-data-chart'" :class="{'nav-link': true, 'active': currentPage === 'sensor-data-chart'}">센서 데이터 차트</button>
+            <button @click="currentPage = 'cctv-images'" :class="{'nav-link': true, 'active': currentPage === 'cctv-images'}">CCTV 이미지</button>
+        </nav>
+
+        <!-- 디바이스 관리 화면 -->
+        <div v-if="currentPage === 'device-management'" class="card">
+            <h2 class="text-2xl font-semibold mb-4">디바이스 관리</h2>
+
+            <form @submit.prevent="saveDevice" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="deviceId" class="block text-sm font-medium text-gray-700">디바이스 ID</label>
+                    <input type="text" id="deviceId" v-model="currentDevice.device_id" required :disabled="isEditMode" class="mt-1">
+                </div>
+                <div>
+                    <label for="deviceName" class="block text-sm font-medium text-gray-700">디바이스 이름</label>
+                    <input type="text" id="deviceName" v-model="currentDevice.device_name" required class="mt-1">
+                </div>
+                <div>
+                    <label for="deviceType" class="block text-sm font-medium text-gray-700">디바이스 타입</label>
+                    <select id="deviceType" v-model="currentDevice.device_type" required class="mt-1">
+                        <option value="">선택</option>
+                        <option value="sensor">센서</option>
+                        <option value="water-purifier-robot">수질 정화 로봇</option>
+                        <option value="cctv">CCTV</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="owner" class="block text-sm font-medium text-gray-700">소유자</label>
+                    <input type="text" id="owner" v-model="currentDevice.owner" class="mt-1">
+                </div>
+                <div>
+                    <label for="latitude" class="block text-sm font-medium text-gray-700">위도</label>
+                    <input type="number" step="any" id="latitude" v-model="currentDevice.latitude" class="mt-1">
+                </div>
+                <div>
+                    <label for="longitude" class="block text-sm font-medium text-gray-700">경도</label>
+                    <input type="number" step="any" id="longitude" v-model="currentDevice.longitude" class="mt-1">
+                </div>
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700">상태</label>
+                    <select id="status" v-model="currentDevice.status" class="mt-1">
+                        <option value="active">활성</option>
+                        <option value="inactive">비활성</option>
+                        <option value="maintenance">점검 중</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label for="description" class="block text-sm font-medium text-gray-700">설명</label>
+                    <textarea id="description" v-model="currentDevice.description" rows="2" class="mt-1"></textarea>
+                </div>
+                <div class="md:col-span-2 flex justify-end space-x-2">
+                    <button type="submit" class="btn-primary">{{ isEditMode ? '수정' : '등록' }}</button>
+                    <button type="button" @click="resetForm" class="btn-secondary">초기화</button>
+                </div>
+            </form>
+
+            <h3 class="text-xl font-semibold mb-3">등록된 디바이스 목록</h3>
+            <div v-if="devices.length === 0" class="text-gray-500">등록된 디바이스가 없습니다.</div>
+            <table v-else>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>이름</th>
+                        <th>타입</th>
+                        <th>소유자</th>
+                        <th>위도</th>
+                        <th>경도</th>
+                        <th>상태</th>
+                        <th>등록일</th>
+                        <th>액션</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="device in devices" :key="device.device_id">
+                        <td>{{ device.device_id }}</td>
+                        <td>{{ device.device_name }}</td>
+                        <td>{{ device.device_type }}</td>
+                        <td>{{ device.owner }}</td>
+                        <td>{{ device.latitude }}</td>
+                        <td>{{ device.longitude }}</td>
+                        <td>{{ device.status }}</td>
+                        <td>{{ new Date(device.created_at).toLocaleDateString() }}</td>
+                        <td class="flex space-x-2">
+                            <button @click="editDevice(device)" class="btn-secondary">수정</button>
+                            <button @click="confirmDeleteDevice(device.device_id)" class="btn-danger">삭제</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 디바이스 상태 조회 화면 -->
+        <div v-if="currentPage === 'device-status'" class="card">
+            <h2 class="text-2xl font-semibold mb-4">디바이스 상태 조회</h2>
+            <div class="flex items-center space-x-4 mb-4">
+                <label for="statusDeviceType" class="block text-sm font-medium text-gray-700">디바이스 타입:</label>
+                <select id="statusDeviceType" v-model="selectedDeviceType" @change="fetchDeviceStatus" class="w-auto">
+                    <option value="">전체</option>
+                    <option value="sensor">센서</option>
+                    <option value="water-purifier-robot">수질 정화 로봇</option>
+                </select>
+                <button @click="fetchDeviceStatus" class="btn-primary">조회</button>
+            </div>
+
+            <h3 class="text-xl font-semibold mb-3">현재 디바이스 상태</h3>
+            <div v-if="deviceStatusList.length === 0" class="text-gray-500">조회된 디바이스 상태가 없습니다.</div>
+            <table v-else>
+                <thead>
+                    <tr>
+                        <th>장치 ID</th>
+                        <th>타입</th>
+                        <th>시간</th>
+                        <th>배터리</th>
+                        <th>상태</th>
+                        <th>필터 잔량</th>
+                        <th>정화량 (L)</th>
+                        <th>위도</th>
+                        <th>경도</th>
+                        <th>에러 코드</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="status in deviceStatusList" :key="status.id">
+                        <td>{{ status.device_id }}</td>
+                        <td>{{ getDeviceType(status.device_id) }}</td>
+                        <td>{{ new Date(status.timestamp).toLocaleString() }}</td>
+                        <td>{{ status.battery_level ? status.battery_level + '%' : '-' }}</td>
+                        <td>{{ status.current_status }}</td>
+                        <td>{{ status.filter_life_remaining ? status.filter_life_remaining + '%' : '-' }}</td>
+                        <td>{{ status.purified_volume_liters ? status.purified_volume_liters : '-' }}</td>
+                        <td>{{ status.latitude ? status.latitude : '-' }}</td>
+                        <td>{{ status.longitude ? status.longitude : '-' }}</td>
+                        <td>{{ status.error_code ? status.error_code : '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="text-xl font-semibold mt-6 mb-3">최근 호수 상태 (센서 데이터)</h3>
+            <div v-if="lakeStatusList.length === 0" class="text-gray-500">조회된 호수 상태 데이터가 없습니다.</div>
+            <table v-else>
+                <thead>
+                    <tr>
+                        <th>센서 ID</th>
+                        <th>시간</th>
+                        <th>온도 (°C)</th>
+                        <th>pH</th>
+                        <th>용존 산소</th>
+                        <th>탁도</th>
+                        <th>오염도</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="status in lakeStatusList" :key="status.id">
+                        <td>{{ status.sensor_id }}</td>
+                        <td>{{ new Date(status.timestamp).toLocaleString() }}</td>
+                        <td>{{ status.temperature }}</td>
+                        <td>{{ status.ph }}</td>
+                        <td>{{ status.dissolved_oxygen }}</td>
+                        <td>{{ status.turbidity }}</td>
+                        <td>{{ status.pollution_level }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 로봇 위치 추적 화면 -->
+        <div v-if="currentPage === 'robot-location'" class="card">
+            <h2 class="text-2xl font-semibold mb-4">수질 정화 로봇 위치 추적</h2>
+            <div id="map" class="mb-4"></div>
+            <div class="text-gray-600">로봇 위치는 30분 단위로 업데이트됩니다.</div>
+            <div v-if="robotLocations.length > 0" class="mt-4">
+                <h3 class="text-xl font-semibold mb-2">최근 로봇 위치 기록</h3>
+                <ul>
+                    <li v-for="loc in robotLocations" :key="loc.timestamp">
+                        <strong>{{ loc.device_id }}</strong>: {{ new Date(loc.timestamp).toLocaleString() }} - 위도: {{ loc.latitude }}, 경도: {{ loc.longitude }}
+                    </li>
+                </ul>
+            </div>
+            <div v-else class="text-gray-500 mt-4">로봇 위치 데이터가 없습니다.</div>
+        </div>
+
+        <!-- 센서 데이터 차트 화면 -->
+        <div v-if="currentPage === 'sensor-data-chart'" class="card">
+            <h2 class="text-2xl font-semibold mb-4">센서 데이터 차트</h2>
+            <div class="flex items-center space-x-4 mb-4">
+                <label for="sensorIdForChart" class="block text-sm font-medium text-gray-700">센서 선택:</label>
+                <select id="sensorIdForChart" v-model="selectedSensorId" class="w-auto">
+                    <option value="">모든 센서</option>
+                    <option v-for="sensor in sensors" :value="sensor.device_id" :key="sensor.device_id">{{ sensor.device_name }} ({{ sensor.device_id }})</option>
+                </select>
+                <button @click="fetchSensorDataForChart" class="btn-primary">최근 1시간 데이터 조회</button>
+            </div>
+
+            <div v-if="sensorChartData.length > 0">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">온도 변화</h3>
+                        <canvas id="temperatureChart"></canvas>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">pH 변화</h3>
+                        <canvas id="phChart"></canvas>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">용존 산소 변화</h3>
+                        <canvas id="dissolvedOxygenChart"></canvas>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">탁도 변화</h3>
+                        <canvas id="turbidityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div v-else class="text-gray-500">조회할 센서 데이터가 없습니다. '최근 1시간 데이터 조회' 버튼을 눌러주세요.</div>
+        </div>
+
+        <!-- CCTV 이미지 화면 -->
+        <div v-if="currentPage === 'cctv-images'" class="card">
+            <h2 class="text-2xl font-semibold mb-4">CCTV 이벤트 이미지</h2>
+            <button @click="fetchCCTVImages" class="btn-primary mb-4">이미지 조회</button>
+
+            <div v-if="cctvImages.length === 0" class="text-gray-500">조회된 CCTV 이미지가 없습니다.</div>
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div v-for="image in cctvImages" :key="image.id" class="border rounded-lg overflow-hidden shadow-md">
+                    <img :src="image.blob_url" :alt="image.description" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <p class="text-sm text-gray-600 mb-1">{{ new Date(image.event_timestamp).toLocaleString() }}</p>
+                        <p class="font-semibold">{{ image.event_type }}</p>
+                        <p class="text-sm text-gray-700">{{ image.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 삭제 확인 모달 -->
+        <div v-if="showDeleteModal" class="modal">
+            <div class="modal-content">
+                <h3 class="text-xl font-semibold mb-4">디바이스 삭제 확인</h3>
+                <p class="mb-6">정말로 '{{ deviceToDeleteId }}' 디바이스를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
+                <div class="flex justify-end space-x-4">
+                    <button @click="cancelDelete" class="btn-secondary">취소</button>
+                    <button @click="deleteDevice" class="btn-danger">삭제</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase 설정 및 초기화
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // API 엔드포인트 (Spring Boot 백엔드 URL로 변경 필요)
+        const API_BASE_URL = 'http://localhost:8080/api'; // 실제 Spring Boot API URL로 변경하세요.
+
+        // Google Maps API 키 (YOUR_GOOGLE_MAPS_API_KEY를 실제 키로 변경하세요)
+        // const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+        const { createApp, ref, onMounted, watch, nextTick } = Vue;
+
+        createApp({
+            setup() {
+                const currentPage = ref('device-management');
+                const userId = ref(null);
+                const isAuthReady = ref(false);
+
+                // 디바이스 관리
+                const devices = ref([]);
+                const currentDevice = ref({
+                    device_id: '',
+                    device_name: '',
+                    device_type: '',
+                    owner: '',
+                    latitude: null,
+                    longitude: null,
+                    coord_system: 'WGS84',
+                    status: 'active',
+                    description: ''
+                });
+                const isEditMode = ref(false);
+                const showDeleteModal = ref(false);
+                const deviceToDeleteId = ref(null);
+
+                // 디바이스 상태 조회
+                const selectedDeviceType = ref('');
+                const deviceStatusList = ref([]);
+                const lakeStatusList = ref([]);
+
+                // 로봇 위치 추적
+                let map = null;
+                let robotMarker = null;
+                const robotLocations = ref([]); // 최근 로봇 위치 기록 (Redis Pub/Sub 대신 API 호출로 대체)
+
+                // 센서 데이터 차트
+                const sensors = ref([]); // 등록된 센서 목록
+                const selectedSensorId = ref('');
+                const sensorChartData = ref([]);
+                let temperatureChart = null;
+                let phChart = null;
+                let dissolvedOxygenChart = null;
+                let turbidityChart = null;
+
+                // CCTV 이미지
+                const cctvImages = ref([]);
+
+                // Firestore 초기화 및 인증
+                onMounted(async () => {
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            userId.value = user.uid;
+                        } else {
+                            // __initial_auth_token이 없으면 익명 로그인 시도
+                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                                try {
+                                    await signInWithCustomToken(auth, __initial_auth_token);
+                                    userId.value = auth.currentUser.uid;
+                                } catch (error) {
+                                    console.error("Custom token sign-in failed:", error);
+                                    await signInAnonymously(auth);
+                                    userId.value = auth.currentUser.uid;
+                                }
+                            } else {
+                                await signInAnonymously(auth);
+                                userId.value = auth.currentUser.uid;
+                            }
+                        }
+                        isAuthReady.value = true;
+                        console.log("Firebase Auth Ready. User ID:", userId.value);
+
+                        // 인증 완료 후 데이터 로드
+                        if (userId.value) {
+                            fetchDevices();
+                            fetchSensors(); // 센서 목록 로드 (차트용)
+                            // 페이지 로드 시 기본적으로 디바이스 상태 조회
+                            fetchDeviceStatus();
+                        }
+                    });
+                });
+
+                // Firestore 데이터 변경 감지 (실시간 동기화)
+                watch(isAuthReady, (ready) => {
+                    if (ready && userId.value) {
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                        const devicesCollectionRef = collection(db, `artifacts/${appId}/users/${userId.value}/devices`);
+
+                        onSnapshot(devicesCollectionRef, (snapshot) => {
+                            devices.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            console.log("Devices updated from Firestore:", devices.value);
+                        }, (error) => {
+                            console.error("Error listening to devices:", error);
+                        });
+                    }
+                });
+
+                // 디바이스 관리 함수
+                const fetchDevices = async () => {
+                    if (!isAuthReady.value || !userId.value) return;
+                    try {
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                        const devicesCollectionRef = collection(db, `artifacts/${appId}/users/${userId.value}/devices`);
+                        const querySnapshot = await getDocs(devicesCollectionRef);
+                        devices.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    } catch (error) {
+                        console.error("디바이스 목록 조회 실패:", error);
+                        alert("디바이스 목록 조회에 실패했습니다. 백엔드 서버가 실행 중인지, API_BASE_URL이 올바른지 확인해주세요.");
+                    }
+                };
+
+                const saveDevice = async () => {
+                    if (!isAuthReady.value || !userId.value) {
+                        console.error("인증이 완료되지 않았습니다.");
+                        return;
+                    }
+                    try {
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                        const deviceData = { ...currentDevice.value };
+
+                        // 숫자 필드 변환
+                        deviceData.latitude = deviceData.latitude ? parseFloat(deviceData.latitude) : null;
+                        deviceData.longitude = deviceData.longitude ? parseFloat(deviceData.longitude) : null;
+
+                        if (isEditMode.value) {
+                            // 수정
+                            const deviceDocRef = doc(db, `artifacts/${appId}/users/${userId.value}/devices`, deviceData.device_id);
+                            await setDoc(deviceDocRef, deviceData, { merge: true });
+                            console.log("디바이스 수정 성공:", deviceData.device_id);
+                            alert("디바이스가 성공적으로 수정되었습니다."); // 사용자에게 알림
+                        } else {
+                            // 등록
+                            const deviceDocRef = doc(db, `artifacts/${appId}/users/${userId.value}/devices`, deviceData.device_id);
+                            await setDoc(deviceDocRef, { ...deviceData, created_at: new Date().toISOString() });
+                            console.log("디바이스 등록 성공:", deviceData.device_id);
+                            alert("디바이스가 성공적으로 등록되었습니다."); // 사용자에게 알림
+                        }
+                        resetForm();
+                        fetchDevices(); // 목록 새로고침
+                    } catch (error) {
+                        console.error("디바이스 저장 실패:", error);
+                        alert("디바이스 저장에 실패했습니다: " + error.message + ". 백엔드 서버가 실행 중인지, API_BASE_URL이 올바른지 확인해주세요."); // 사용자에게 에러 알림
+                    }
+                };
+
+                const editDevice = (device) => {
+                    currentDevice.value = { ...device };
+                    isEditMode.value = true;
+                };
+
+                const confirmDeleteDevice = (deviceId) => {
+                    deviceToDeleteId.value = deviceId;
+                    showDeleteModal.value = true;
+                };
+
+                const cancelDelete = () => {
+                    showDeleteModal.value = false;
+                    deviceToDeleteId.value = null;
+                };
+
+                const deleteDevice = async () => {
+                    if (!isAuthReady.value || !userId.value || !deviceToDeleteId.value) return;
+                    try {
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                        const deviceDocRef = doc(db, `artifacts/${appId}/users/${userId.value}/devices`, deviceToDeleteId.value);
+                        await deleteDoc(deviceDocRef);
+                        console.log("디바이스 삭제 성공:", deviceToDeleteId.value);
+                        alert("디바이스가 성공적으로 삭제되었습니다."); // 사용자에게 알림
+                        fetchDevices(); // 목록 새로고침
+                    } catch (error) {
+                        console.error("디바이스 삭제 실패:", error);
+                        alert("디바이스 삭제에 실패했습니다: " + error.message + ". 백엔드 서버가 실행 중인지, API_BASE_URL이 올바른지 확인해주세요."); // 사용자에게 에러 알림
+                    } finally {
+                        cancelDelete();
+                    }
+                };
+
+                const resetForm = () => {
+                    currentDevice.value = {
+                        device_id: '',
+                        device_name: '',
+                        device_type: '',
+                        owner: '',
+                        latitude: null,
+                        longitude: null,
+                        coord_system: 'WGS84',
+                        status: 'active',
+                        description: ''
+                    };
+                    isEditMode.value = false;
+                };
+
+                // 디바이스 상태 조회 함수
+                const fetchDeviceStatus = async () => {
+                    if (!isAuthReady.value || !userId.value) return;
+                    try {
+                        // Spring Boot API를 통해 최신 디바이스 상태 조회
+                        const deviceStatusRes = await axios.get(`${API_BASE_URL}/device-status`, {
+                            params: { deviceType: selectedDeviceType.value }
+                        });
+                        deviceStatusList.value = deviceStatusRes.data;
+                        console.log("Device Status fetched:", deviceStatusList.value);
+
+                        // Spring Boot API를 통해 최신 호수 상태 조회 (센서 데이터)
+                        const lakeStatusRes = await axios.get(`${API_BASE_URL}/lake-status`);
+                        lakeStatusList.value = lakeStatusRes.data;
+                        console.log("Lake Status fetched:", lakeStatusList.value);
+
+                    } catch (error) {
+                        console.error("디바이스 상태 조회 실패:", error);
+                        alert("디바이스 상태 조회에 실패했습니다. 백엔드 서버가 실행 중인지, API_BASE_URL이 올바른지 확인해주세요.");
+                    }
+                };
+
+                const getDeviceType = (deviceId) => {
+                    const device = devices.value.find(d => d.device_id === deviceId);
+                    return device ? device.device_type : '알 수 없음';
+                };
+
+                // 로봇 위치 추적 함수
+                const initMap = () => {
+                    if (map) return; // 맵이 이미 초기화되었다면 다시 초기화하지 않음
+
+                    const defaultLocation = { lat: 37.5665, lng: 126.9780 }; // 서울 시청 기본 위치
+                    map = new google.maps.Map(document.getElementById('map'), {
+                        center: defaultLocation,
+                        zoom: 12,
+                    });
+
+                    // 로봇 마커 초기화 (초기에는 숨김)
+                    robotMarker = new google.maps.Marker({
+                        map: map,
+                        position: defaultLocation,
+                        title: '수질 정화 로봇',
+                        icon: {
+                            url: 'http://maps.google.com/mapfiles/ms/icons/robot.png', // 로봇 아이콘 (예시)
+                            scaledSize: new google.maps.Size(40, 40)
+                        },
+                        visible: false // 초기에는 보이지 않게 설정
+                    });
+                };
+
+                const updateRobotLocationOnMap = (locationData) => {
+                    if (!map || !robotMarker) {
+                        initMap(); // 맵이 초기화되지 않았다면 초기화
+                        if (!map || !robotMarker) return; // 초기화 실패 시 반환
+                    }
+
+                    if (locationData && locationData.latitude && locationData.longitude) {
+                        const newPosition = { lat: locationData.latitude, lng: locationData.longitude };
+                        robotMarker.setPosition(newPosition);
+                        robotMarker.setVisible(true); // 마커를 보이게 함
+                        map.setCenter(newPosition); // 맵의 중심을 로봇 위치로 이동
+                        map.setZoom(15); // 적절한 줌 레벨 설정
+                    } else {
+                        robotMarker.setVisible(false); // 위치 데이터가 없으면 마커 숨김
+                    }
+                };
+
+                // 로봇 위치 데이터를 API에서 가져오는 함수 (Redis Pub/Sub 대신)
+                const fetchRobotLocation = async () => {
+                    if (!isAuthReady.value || !userId.value) return;
+                    try {
+                        // Spring Boot API를 통해 최신 로봇 위치 데이터 조회
+                        const response = await axios.get(`${API_BASE_URL}/robot-location`);
+                        robotLocations.value = response.data; // 여러 로봇의 최신 위치를 받을 수 있음
+                        console.log("Robot locations fetched:", robotLocations.value);
+
+                        // 가장 최근에 업데이트된 로봇의 위치를 맵에 표시
+                        if (robotLocations.value.length > 0) {
+                            // 'water-purifier-robot' 타입의 디바이스만 필터링
+                            const waterRobots = robotLocations.value.filter(loc =>
+                                devices.value.some(d => d.device_id === loc.device_id && d.device_type === 'water-purifier-robot')
+                            );
+
+                            if (waterRobots.length > 0) {
+                                // 가장 최근 타임스탬프를 가진 로봇 찾기
+                                const latestRobotLocation = waterRobots.reduce((prev, current) =>
+                                    (new Date(prev.timestamp) > new Date(current.timestamp)) ? prev : current
+                                );
+                                updateRobotLocationOnMap(latestRobotLocation.location);
+                            } else {
+                                updateRobotLocationOnMap(null); // 로봇이 없으면 마커 숨김
+                            }
+                        } else {
+                            updateRobotLocationOnMap(null); // 데이터가 없으면 마커 숨김
+                        }
+                    } catch (error) {
+                        console.error("로봇 위치 조회 실패:", error);
+                        alert("로봇 위치 조회에 실패했습니다. 백엔드 서버가 실행 중인지, API_BASE_URL이 올바른지 확인해주세요.");
+                    }
+                };
+
+                // 페이지 변경 시 맵 초기화 및 데이터 로드
+                watch(currentPage, async (newPage) => {
+                    if (newPage === 'robot-location') {
+                        await nextTick(); // DOM 업데이트 대기
+                        initMap();
+                        fetchRobotLocation();
+                        // 30분마다 위치 업데이트 (실제 Redis Pub/Sub 대신 API 호출)
+                        // setInterval(fetchRobotLocation, 30 * 60 * 1000); // 30분마다
+                    } else if (newPage === 'sensor-data-chart') {
+                        await nextTick();
+                        fetchSensors(); // 센서 목록 다시 로드
+                        // 차트 초기화
+                        if (temperatureChart) temperatureChart.destroy();
+                        if (phChart) phChart.destroy();
+                        if (dissolvedOxygenChart) dissolvedOxygenChart.destroy();
+                        if (turbidityChart) turbidityChart.destroy();
+                        sensorChartData.value = []; // 데이터 초기화
+                    } else if (newPage === 'device-status') {
+                        fetchDeviceStatus();
+                    } else if (newPage === 'cctv-images') {
+                        fetchCCTVImages();
+                    }
+                });
+
+                // 센서 데이터 차트 함수
+                const fetchSensors = async () => {
+                    if (!isAuthReady.value || !userId.value) return;
+                    try {
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                        const devicesCollectionRef = collection(db, `artifacts/${appId}/users/${userId.value}/devices`);
+                        const q = query(devicesCollectionRef, where("device_type", "==", "sensor"));
+                        const querySnapshot = await getDocs(q);
+                        sensors.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        if (sensors.value.length > 0) {
+                            selectedSensorId.value = sensors.value[0].device_id; // 첫 번째 센서 기본 선택
+                        }
+                    } catch (error) {
+                        console.error("센서 목록 조회 실패:", error);
+                        alert("센서 목록 조회에 실패했습니다. 백엔드 서버가 실행 중인지, API_BASE_URL이 올바른지 확인해주세요.");
+                    }
+                };
+
+                const fetchSensorDataForChart = async () => {
+                    if (!isAuthReady.value || !userId.value) return;
+                    if (!selectedSensorId.value && sensors.value.length > 0) {
+                        selectedSensorId.value = sensors.value[0].device_id; // 센서가 선택되지 않았다면 첫 번째 센서 선택
+                    }
+                    if (!selectedSensorId.value) {
+                        alert("차트를 조회할 센서를 선택해주세요.");
+                        return;
+                    }
+
+                    try {
+                        // Spring Boot API를 통해 최근 1시간 센서 데이터 조회
+                        const response = await axios.get(`${API_BASE_URL}/lake-status/hourly`, {
+                            params: { sensorId: selectedSensorId.value }
+                        });
+                        sensorChartData.value = response.data;
+                        console.log("Sensor chart data fetched:", sensorChartData.value);
+                        renderCharts();
+                    } catch (error) {
+                        console.error("센서 차트 데이터 조회 실패:", error);
+                        alert("센서 차트 데이터 조회에 실패했습니다. 백엔드 서버가 실행 중인지, API_BASE_URL이 올바른지 확인해주세요.");
+                    }
+                };
+
+                const renderCharts = () => {
+                    const timestamps = sensorChartData.value.map(d => new Date(d.timestamp).toLocaleString());
+                    const temperatures = sensorChartData.value.map(d => d.temperature);
+                    const phValues = sensorChartData.value.map(d => d.ph);
+                    const dissolvedOxygens = sensorChartData.value.map(d => d.dissolved_oxygen);
+                    const turbidities = sensorChartData.value.map(d => d.turbidity);
+
+                    // 기존 차트 파괴
+                    if (temperatureChart) temperatureChart.destroy();
+                    if (phChart) phChart.destroy();
+                    if (dissolvedOxygenChart) dissolvedOxygenChart.destroy();
+                    if (turbidityChart) turbidityChart.destroy();
+
+                    // 온도 차트
+                    temperatureChart = new Chart(document.getElementById('temperatureChart'), {
+                        type: 'line',
+                        data: {
+                            labels: timestamps,
+                            datasets: [{
+                                label: '온도 (°C)',
+                                data: temperatures,
+                                borderColor: 'rgb(255, 99, 132)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: false
+                                }
+                            }
+                        }
+                    });
+
+                    // pH 차트
+                    phChart = new Chart(document.getElementById('phChart'), {
+                        type: 'line',
+                        data: {
+                            labels: timestamps,
+                            datasets: [{
+                                label: 'pH',
+                                data: phValues,
+                                borderColor: 'rgb(54, 162, 235)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    min: 6, // pH 범위 고려
+                                    max: 9
+                                }
+                            }
+                        }
+                    });
+
+                    // 용존 산소 차트
+                    dissolvedOxygenChart = new Chart(document.getElementById('dissolvedOxygenChart'), {
+                        type: 'line',
+                        data: {
+                            labels: timestamps,
+                            datasets: [{
+                                label: '용존 산소',
+                                data: dissolvedOxygens,
+                                borderColor: 'rgb(75, 192, 192)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: false
+                                }
+                            }
+                        }
+                    });
+
+                    // 탁도 차트
+                    turbidityChart = new Chart(document.getElementById('turbidityChart'), {
+                        type: 'line',
+                        data: {
+                            labels: timestamps,
+                            datasets: [{
+                                label: '탁도',
+                                data: turbidities,
+                                borderColor: 'rgb(153, 102, 255)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                };
+
+                // CCTV 이미지 함수
+                const fetchCCTVImages = async () => {
+                    if (!isAuthReady.value || !userId.value) return;
+                    try {
+                        const response = await axios.get(`${API_BASE_URL}/cctv-images`);
+                        cctvImages.value = response.data;
+                        console.log("CCTV images fetched:", cctvImages.value);
+                    } catch (error) {
+                        console.error("CCTV 이미지 조회 실패:", error);
+                        alert("CCTV 이미지 조회에 실패했습니다. 백엔드 서버가 실행 중인지, API_BASE_URL이 올바른지 확인해주세요.");
+                    }
+                };
+
+                return {
+                    currentPage,
+                    userId,
+                    devices,
+                    currentDevice,
+                    isEditMode,
+                    showDeleteModal,
+                    deviceToDeleteId,
+                    saveDevice,
+                    editDevice,
+                    confirmDeleteDevice,
+                    cancelDelete,
+                    deleteDevice,
+                    resetForm,
+                    selectedDeviceType,
+                    deviceStatusList,
+                    lakeStatusList,
+                    fetchDeviceStatus,
+                    getDeviceType,
+                    robotLocations,
+                    sensors,
+                    selectedSensorId,
+                    sensorChartData,
+                    fetchSensorDataForChart,
+                    cctvImages,
+                    fetchCCTVImages
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
