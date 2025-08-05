@@ -86,7 +86,8 @@ import L from 'leaflet';
 // Import the image using a relative path, Vue handles the asset pipeline.
 import robotIconUrl from '/public/images/waterbot.png';
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
+
 
 let map = null;
 let refreshInterval = null;
