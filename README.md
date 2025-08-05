@@ -345,3 +345,11 @@ lake-monitoring-frontend/
 * **SAS 토큰 권한:** SAS 토큰에 필요한 `읽기`, `쓰기`, `목록` 권한이 올바르게 부여되었는지 확인합니다.
 
 이 `README.md` 문서를 통해 프로젝트를 쉽게 이해하고 설정하며 실행할 수 있기를 바랍니다.
+
+
+
+
+----------------------------
+rm -rf node_modules
+rm package-lock.json
+npm install

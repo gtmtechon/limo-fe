@@ -27,7 +27,7 @@
     <div id="map" class="mb-4"></div>
     <div class="text-gray-600">
       로봇 위치는 5초 단위로 업데이트됩니다.
-      <span v-if="loading" class="loading loading-dots loading-xs ml-2"></span>
+      <span v-if="loading" class="text-blue-500 font-bold"> 업데이트 중... </span>
     </div>
 
     <!-- 로봇별 상태를 카드 형태로 표시 -->
@@ -85,17 +85,31 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
 // === State and Data ===
-// API 기본 URL을 기존 백엔드와 캐시 백엔드로 분리
-const API_OLD_BACKEND_URL = process.env.VUE_APP_OLD_API_BASE_URL;
-const API_CACHE_BACKEND_URL = process.env.VUE_APP_CACHE_API_BASE_URL;
+// API 기본 URL. DeviceStatusController의 @RequestMapping에 맞춰 수정
+const API_BASE_URL = 'http://localhost:8080/api/device-status';
 
 let map = null;
-let refreshInterval = null;
+let refreshInterval = null; // Polling을 위한 setInterval 핸들러
+const loading = ref(false); // 로딩 상태
 const robotMarkers = ref({});
 const activeRobotLocations = ref([]);
 const showMessage = ref({ visible: false, text: '', type: 'info' });
 const alertClass = ref('alert-info');
-const loading = ref(false);
+
+// Leaflet 기본 마커 이미지 설정 (Vue에서 사용할 때 필요)
+import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import shadow from 'leaflet/dist/images/marker-shadow.png';
+L.Marker.prototype.options.icon = L.icon({
+  iconRetinaUrl: iconRetina,
+  iconUrl: icon,
+  shadowUrl: shadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41],
+});
 
 // === Methods ===
 const showMessageBox = (text, type = 'info', duration = 3000) => {
@@ -122,41 +136,33 @@ const initMap = () => {
     maxZoom: 19,
     attribution: '© OpenStreetMap contributors',
   }).addTo(map);
-
-  // 초기 위치 마커가 있다면 맵을 해당 위치로 이동
-  if (activeRobotLocations.value.length > 0) {
-    const latestRobot = activeRobotLocations.value.reduce((prev, current) =>
-      new Date(prev.ttimestamp) > new Date(current.ttimestamp) ? prev : current
-    );
-    if (latestRobot.location) {
-      map.setView([latestRobot.location.latitude, latestRobot.location.longitude], 15);
-    }
-  }
 };
 
 const updateMapMarkers = (robotData) => {
-  // 기존 마커를 삭제하거나 업데이트
-  if (robotMarkers.value[robotData.deviceId]) {
-    map.removeLayer(robotMarkers.value[robotData.deviceId]);
-  }
+  if (robotData && robotData.location) {
+    // 기존 마커를 삭제하거나 업데이트
+    if (robotMarkers.value[robotData.deviceId]) {
+      map.removeLayer(robotMarkers.value[robotData.deviceId]);
+    }
 
-  // 새로운 마커 생성 및 팝업 추가
-  const marker = L.marker([robotData.location.latitude, robotData.location.longitude]).addTo(map);
-  const popupContent = `
-    <b>${robotData.deviceId}</b><br>
-    상태: ${robotData.currentStatus}<br>
-    배터리: ${robotData.batteryLevel}%<br>
-    업데이트: ${formatDate(robotData.ttimestamp)}
-  `;
-  marker.bindPopup(popupContent);
-  robotMarkers.value[robotData.deviceId] = marker;
+    // 새로운 마커 생성 및 팝업 추가
+    const marker = L.marker([robotData.location.latitude, robotData.location.longitude]).addTo(map);
+    const popupContent = `
+      <b>${robotData.deviceId}</b><br>
+      상태: ${robotData.currentStatus}<br>
+      배터리: ${robotData.batteryLevel}%<br>
+      업데이트: ${formatDate(robotData.ttimestamp)}
+    `;
+    marker.bindPopup(popupContent);
+    robotMarkers.value[robotData.deviceId] = marker;
 
-  // activeRobotLocations 데이터 업데이트
-  const index = activeRobotLocations.value.findIndex((r) => r.deviceId === robotData.deviceId);
-  if (index !== -1) {
-    activeRobotLocations.value[index] = robotData;
-  } else {
-    activeRobotLocations.value.push(robotData);
+    // activeRobotLocations 데이터 업데이트
+    const index = activeRobotLocations.value.findIndex((r) => r.deviceId === robotData.deviceId);
+    if (index !== -1) {
+      activeRobotLocations.value[index] = robotData;
+    } else {
+      activeRobotLocations.value.push(robotData);
+    }
   }
 };
 
@@ -180,26 +186,12 @@ const goToLatestRobot = () => {
   }
 };
 
-// 기존 백엔드에서 디바이스 목록을 가져오는 함수 (예시)
-const fetchDevices = async () => {
-  try {
-    // 실제 디바이스 목록 API 엔드포인트로 변경해야 합니다.
-    const response = await fetch(`${API_OLD_BACKEND_URL}/api/devices`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const devices = await response.json();
-    console.log('Fetched devices from old backend:', devices);
-  } catch (error) {
-    console.error('Fetching devices failed:', error);
-  }
-};
-
-// 캐시 백엔드에서 로봇 위치를 폴링하는 함수
+// DeviceStatusController.java의 robot-location API를 폴링하는 함수
 const fetchRobotLocation = async () => {
   loading.value = true;
   try {
-    const response = await fetch(`${API_CACHE_BACKEND_URL}/api/latest-robots`);
+    // DeviceStatusController에 정의된 /api/device-status/robot-location 엔드포인트를 호출
+    const response = await fetch(`${API_BASE_URL}/robot-location`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -216,17 +208,12 @@ const fetchRobotLocation = async () => {
 
 // 컴포넌트 마운트 시 초기 데이터 로드 및 폴링 시작
 onMounted(async () => {
-  // 기존 백엔드에서 디바이스 목록을 먼저 가져옵니다.
-  await fetchDevices();
-
-  // 캐시 백엔드에서 로봇 위치 데이터를 가져오고 지도와 폴링을 시작합니다.
-  await fetchRobotLocation(); // 초기 데이터 로드
   initMap(); // 지도 초기화
-  // 5초 간격으로 폴링 시작
-  refreshInterval = setInterval(fetchRobotLocation, 5000);
+  await fetchRobotLocation(); // 초기 데이터 로드
+  refreshInterval = setInterval(fetchRobotLocation, 5000); // 5초마다 폴링 시작
 });
 
-// 컴포넌트 언마운트 시 인터벌 정리
+// 컴포넌트 언마운트 시 인터벌 및 맵 정리
 onUnmounted(() => {
   if (refreshInterval) {
     clearInterval(refreshInterval);

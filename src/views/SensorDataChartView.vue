@@ -3,9 +3,7 @@
     <h2 class="text-2xl font-semibold mb-4">센서 데이터 차트</h2>
     <div class="flex items-center space-x-4 mb-4">
       <!-- 센서 선택 콤보 박스 제거됨 -->
-      <button @click="reloadPage" class="btn btn-primary">
-        최근 1시간 데이터 조회
-      </button>
+      <button @click="reloadPage" class="btn btn-primary">최근 1시간 데이터 조회</button>
     </div>
 
     <div v-if="sensorChartData.length > 0">
