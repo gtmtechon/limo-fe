@@ -30,7 +30,6 @@
       <span v-if="loading" class="text-blue-500 font-bold"> 업데이트 중... </span>
     </div>
 
-    <!-- 로봇별 상태를 카드 형태로 표시 -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
       <div
         v-for="robot in activeRobotLocations"
@@ -84,38 +83,32 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// === State and Data ===
-// API 기본 URL. DeviceStatusController의 @RequestMapping에 맞춰 수정
-const API_BASE_URL = 'http://localhost:8080/api/device-status';
+// Import the image using a relative path, Vue handles the asset pipeline.
+import robotIconUrl from '/public/images/waterbot.png';
+
+const API_BASE_URL = 'http://localhost:8080';
 
 let map = null;
-let refreshInterval = null; // Polling을 위한 setInterval 핸들러
-const loading = ref(false); // 로딩 상태
+let refreshInterval = null;
+const loading = ref(false);
 const robotMarkers = ref({});
 const activeRobotLocations = ref([]);
 const showMessage = ref({ visible: false, text: '', type: 'info' });
 const alertClass = ref('alert-info');
 
-// Leaflet 기본 마커 이미지 설정 (Vue에서 사용할 때 필요)
-import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
-import icon from 'leaflet/dist/images/marker-icon.png';
-import shadow from 'leaflet/dist/images/marker-shadow.png';
-L.Marker.prototype.options.icon = L.icon({
-  iconRetinaUrl: iconRetina,
-  iconUrl: icon,
-  shadowUrl: shadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  tooltipAnchor: [16, -28],
-  shadowSize: [41, 41],
+// 컴포넌트가 소멸 절차에 들어갔는지 확인하는 플래그입니다.
+const isUnmounting = ref(false);
+
+const robotIcon = L.icon({
+  iconUrl: robotIconUrl, // Use the imported URL
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+  popupAnchor: [0, -40],
 });
 
-// === Methods ===
 const showMessageBox = (text, type = 'info', duration = 3000) => {
   showMessage.value = { visible: true, text, type };
-  alertClass.value =
-    type === 'error' ? 'alert-error' : type === 'info' ? 'alert-info' : 'alert-success';
+  alertClass.value = type === 'error' ? 'alert-error' : 'alert-success';
   setTimeout(() => {
     showMessage.value.visible = false;
   }, duration);
@@ -123,51 +116,23 @@ const showMessageBox = (text, type = 'info', duration = 3000) => {
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleString();
+  return new Date(dateString).toLocaleString();
 };
 
 const initMap = () => {
-  if (map) {
-    map.remove();
-  }
-  map = L.map('map').setView([37.5665, 126.978], 13); // 서울 시청으로 초기 뷰 설정
+  if (map) map.remove();
+  map = L.map('map').setView([37.5665, 126.978], 13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '© OpenStreetMap contributors',
   }).addTo(map);
 };
 
-const updateMapMarkers = (robotData) => {
-  if (robotData && robotData.location) {
-    // 기존 마커를 삭제하거나 업데이트
-    if (robotMarkers.value[robotData.deviceId]) {
-      map.removeLayer(robotMarkers.value[robotData.deviceId]);
-    }
-
-    // 새로운 마커 생성 및 팝업 추가
-    const marker = L.marker([robotData.location.latitude, robotData.location.longitude]).addTo(map);
-    const popupContent = `
-      <b>${robotData.deviceId}</b><br>
-      상태: ${robotData.currentStatus}<br>
-      배터리: ${robotData.batteryLevel}%<br>
-      업데이트: ${formatDate(robotData.ttimestamp)}
-    `;
-    marker.bindPopup(popupContent);
-    robotMarkers.value[robotData.deviceId] = marker;
-
-    // activeRobotLocations 데이터 업데이트
-    const index = activeRobotLocations.value.findIndex((r) => r.deviceId === robotData.deviceId);
-    if (index !== -1) {
-      activeRobotLocations.value[index] = robotData;
-    } else {
-      activeRobotLocations.value.push(robotData);
-    }
-  }
-};
-
 const goToRobot = (robot) => {
-  if (map && robot.location) {
+  // 함수 시작 시점에 언마운트가 진행 중이거나 맵이 없으면 즉시 실행을 중단하여 오류를 원천 차단합니다.
+  if (isUnmounting.value || !map) return;
+
+  if (robot.location?.latitude && robot.location?.longitude) {
     map.setView([robot.location.latitude, robot.location.longitude], 15);
     robotMarkers.value[robot.deviceId]?.openPopup();
   } else {
@@ -176,6 +141,8 @@ const goToRobot = (robot) => {
 };
 
 const goToLatestRobot = () => {
+  if (isUnmounting.value || !map) return;
+
   if (activeRobotLocations.value.length > 0) {
     const latestRobot = activeRobotLocations.value.reduce((prev, current) =>
       new Date(prev.ttimestamp) > new Date(current.ttimestamp) ? prev : current
@@ -186,42 +153,71 @@ const goToLatestRobot = () => {
   }
 };
 
-// DeviceStatusController.java의 robot-location API를 폴링하는 함수
 const fetchRobotLocation = async () => {
   loading.value = true;
   try {
-    // DeviceStatusController에 정의된 /api/device-status/robot-location 엔드포인트를 호출
-    const response = await fetch(`${API_BASE_URL}/robot-location`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const response = await fetch(`${API_BASE_URL}/api/latest-robot-status/robots`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
-    data.forEach((robot) => updateMapMarkers(robot));
+
+    // fetch(await)가 끝난 후에도 반드시 상태를 재확인해야 합니다.
+    if (isUnmounting.value || !map) return;
+
+    Object.values(robotMarkers.value).forEach((marker) => map.removeLayer(marker));
+    robotMarkers.value = {};
+    activeRobotLocations.value = [];
+
+    data.forEach((robotData) => {
+      if (robotData?.location?.latitude && robotData?.location?.longitude) {
+        const { latitude: lat, longitude: lng } = robotData.location;
+        const marker = L.marker([lat, lng], { icon: robotIcon }).addTo(map);
+        marker.bindPopup(`
+          <b>${robotData.deviceId}</b><br>
+          상태: ${robotData.currentStatus}<br>
+          배터리: ${robotData.batteryLevel}%<br>
+          업데이트: ${formatDate(robotData.ttimestamp)}
+        `);
+        robotMarkers.value[robotData.deviceId] = marker;
+        activeRobotLocations.value.push(robotData);
+      }
+    });
     showMessageBox('로봇 위치 정보를 업데이트했습니다.', 'success');
   } catch (error) {
-    console.error('Fetching robot location failed:', error);
-    showMessageBox('로봇 위치 정보를 불러오는 데 실패했습니다.', 'error');
+    // isUnmounting 중 발생한 에러는 사용자에게 알릴 필요가 없을 수 있습니다.
+    if (!isUnmounting.value) {
+      console.error('Fetching robot location failed:', error);
+      showMessageBox('로봇 위치 정보를 불러오는 데 실패했습니다.', 'error');
+    }
   } finally {
     loading.value = false;
   }
 };
 
-// 컴포넌트 마운트 시 초기 데이터 로드 및 폴링 시작
 onMounted(async () => {
-  initMap(); // 지도 초기화
-  await fetchRobotLocation(); // 초기 데이터 로드
-  refreshInterval = setInterval(fetchRobotLocation, 5000); // 5초마다 폴링 시작
+  initMap();
+  await fetchRobotLocation();
+  refreshInterval = setInterval(fetchRobotLocation, 5000);
 });
 
-// 컴포넌트 언마운트 시 인터벌 및 맵 정리
 onUnmounted(() => {
+  // 1. 가장 먼저 플래그를 설정하여 다른 모든 작업이 멈추도록 신호를 보냅니다.
+  isUnmounting.value = true;
+
+  // 2. 반복되는 작업을 중단시킵니다.
   if (refreshInterval) {
     clearInterval(refreshInterval);
+    refreshInterval = null;
   }
+
+  // 3. 마지막으로 맵 리소스를 정리합니다.
   if (map) {
+    console.log('Destroying Leaflet map object now.');
     map.remove();
     map = null;
   }
+
+  robotMarkers.value = {};
+  activeRobotLocations.value = [];
 });
 </script>
 
