@@ -18,7 +18,8 @@
     "leaflet": "^1.9.4",
     "vue": "^3.x.x",
     "vue-router": "^4.x.x",
-    "vuex": "^4.x.x"
+    "vuex": "^4.x.x",
+    "serve": "^14.2.3"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.0",
