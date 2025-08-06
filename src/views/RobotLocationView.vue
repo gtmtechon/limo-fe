@@ -197,7 +197,7 @@ const fetchRobotLocation = async () => {
 onMounted(async () => {
   initMap();
   await fetchRobotLocation();
-  refreshInterval = setInterval(fetchRobotLocation, 5000);
+  refreshInterval = setInterval(fetchRobotLocation, 10000);
 });
 
 onUnmounted(() => {
