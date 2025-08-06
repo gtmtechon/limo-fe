@@ -19,22 +19,25 @@ module.exports = {
 
     // 들여쓰기 규칙 (indent)
     // 'indent': ['error', 4, { 'SwitchCase': 1 }], // 4칸 스페이스, switch case 1칸 들여쓰기
-    'indent': ['error', 2], // 2칸 스페이스 (Vue CLI 기본값과 일치)
-                            // 만약 4칸을 선호한다면 4로 변경
+    indent: ['error', 2], // 2칸 스페이스 (Vue CLI 기본값과 일치)
+    // 만약 4칸을 선호한다면 4로 변경
 
     // 따옴표 규칙 (quotes)
-    'quotes': ['error', 'single'], // 홑따옴표 강제
+    quotes: ['error', 'single'], // 홑따옴표 강제
 
     // 라인 길이 규칙 (max-len)
-    'max-len': ['error', {
-      code: 100, // 최대 라인 길이 100자 (기본값)
-      ignoreUrls: true, // URL이 포함된 라인은 무시
-      ignoreStrings: true, // 문자열 리터럴이 포함된 라인은 무시
-      ignoreTemplateLiterals: true, // 템플릿 리터럴이 포함된 라인은 무시
-      ignoreRegExpLiterals: true, // 정규식 리터럴이 포함된 라인은 무시
-      ignoreComments: true, // 주석 라인 무시
-      // ignorePattern: '^import .*' // 특정 패턴에 해당하는 라인 무시 (예: import 문)
-    }],
+    'max-len': [
+      'error',
+      {
+        code: 100, // 최대 라인 길이 100자 (기본값)
+        ignoreUrls: true, // URL이 포함된 라인은 무시
+        ignoreStrings: true, // 문자열 리터럴이 포함된 라인은 무시
+        ignoreTemplateLiterals: true, // 템플릿 리터럴이 포함된 라인은 무시
+        ignoreRegExpLiterals: true, // 정규식 리터럴이 포함된 라인은 무시
+        ignoreComments: true, // 주석 라인 무시
+        // ignorePattern: '^import .*' // 특정 패턴에 해당하는 라인 무시 (예: import 문)
+      },
+    ],
 
     // label-has-for 규칙 (vuejs-accessibility/label-has-for)
     // 이 규칙은 접근성(Accessibility)을 위해 중요합니다.
@@ -56,10 +59,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: [
-        '**/__tests__/*.{j,t}s?(x)',
-        '**/tests/unit/**/*.spec.{j,t}s?(x)',
-      ],
+      files: ['**/__tests__/*.{j,t}s?(x)', '**/tests/unit/**/*.spec.{j,t}s?(x)'],
       env: {
         jest: true,
       },

@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint",
     "start": "serve -s dist -p ${PORT:-8080}",
     "start-server": "node server.js",
-    "postinstall": "npm run build"
+    "postinstall": ""
   },
   "dependencies": {
     "axios": "^1.x.x",
@@ -32,8 +32,7 @@
     "@vue/eslint-config-standard": "^8.0.0",
     "eslint": "^8.x.x",
     "eslint-plugin-vue": "^9.x.x",
-    "prettier": "^2.x.x",
-    "serve": "^14.2.3"
+    "prettier": "^2.x.x"
   },
   "babel": {
     "presets": [
