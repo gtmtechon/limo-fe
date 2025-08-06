@@ -7,8 +7,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "start": "serve -s dist -p ${PORT:-8080}",
-    "start-server": "node server.js",
-    "postinstall": "npm run build"
+    "start-server": "node server.js"    
   },
   "dependencies": {
     "axios": "^1.x.x",
@@ -17,7 +16,8 @@
     "date-fns": "^4.1.0",
     "vue": "^3.x.x",
     "vue-router": "^4.x.x",
-    "vuex": "^4.x.x"
+    "vuex": "^4.x.x",
+    "serve": "^14.2.3"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.0",
@@ -30,8 +30,7 @@
     "@vue/eslint-config-standard": "^8.0.0",
     "eslint": "^8.x.x",
     "eslint-plugin-vue": "^9.x.x",
-    "prettier": "^2.x.x",
-    "serve": "^14.2.3"
+    "prettier": "^2.x.x"    
   },
   "babel": {
     "presets": [
