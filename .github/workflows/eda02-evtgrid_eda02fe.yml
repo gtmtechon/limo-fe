@@ -29,6 +29,8 @@ jobs:
           npm run build
         #npm run build --if-present
         #npm run test --if-present
+      - name: install serve manually
+        run: npm install -g serve
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
