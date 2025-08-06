@@ -157,7 +157,7 @@ const goToLatestRobot = () => {
 const fetchRobotLocation = async () => {
   loading.value = true;
   try {
-    const response = await fetch(`${API_BASE_URL}/api/latest-robot-status/robots`);
+    const response = await fetch(`${API_BASE_URL}/latest-robot-status/robots`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
 
