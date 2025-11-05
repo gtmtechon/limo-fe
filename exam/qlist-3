@@ -1,0 +1,1596 @@
+[
+  {
+    "topic": "네트워킹",
+    "question_no": 300,
+    "question": "VM1에는 주어진 효과적인 네트워크 보안 규칙이 있습니다. 이 규칙에 따라 인터넷에서 VM1으로의 웹 사이트 연결과 VM1에서 인터넷으로의 DNS 쿼리에 대한 설명으로 옳은 것은 무엇입니까?",
+    "condition": "효과적인 보안 규칙:\n- AllowVnetInBound: 소스 'VirtualNetwork', 대상 'VirtualNetwork'에 대한 모든 프로토콜 허용.\n- AllowAzureLoadBalancerInBound: 소스 'AzureLoadBalancer'에 대한 모든 프로토콜 허용.\n- DenyAllInBound: 모든 소스에서 들어오는 모든 트래픽 거부.\n- AllowVnetOutBound: 소스 'VirtualNetwork', 대상 'VirtualNetwork'에 대한 모든 프로토콜 허용.\n- AllowInternetOutBound: 대상으로 'Internet'에 대한 TCP 프로토콜 포트 80, 443 허용.\n- DenyAllOutBound: 모든 대상으로 나가는 모든 트래픽 거부.",
+    "options": [
+      "A. 웹 연결은 허용되고 DNS 쿼리는 거부됩니다.",
+      "B. 웹 연결은 거부되고 DNS 쿼리는 허용됩니다.",
+      "C. 웹 연결과 DNS 쿼리 모두 허용됩니다.",
+      "D. 웹 연결과 DNS 쿼리 모두 거부됩니다."
+    ],
+    "answer": "D",
+    "explanation": "인터넷에서의 인바운드 웹 연결(포트 80/443)은 명시적인 허용 규칙이 없고 우선순위가 낮은 'DenyAllInBound' 규칙에 의해 차단됩니다. 인터넷으로의 아웃바운드 DNS 쿼리(일반적으로 UDP 포트 53 사용)는 'AllowInternetOutBound' 규칙이 TCP 포트 80 및 443만 허용하므로 'DenyAllOutBound' 규칙에 의해 차단됩니다. 따라서 두 연결 모두 거부됩니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 301,
+    "question": "VM1, VM2, VM3이라는 세 개의 Azure 가상 머신을 배포하여 App1이라는 웹앱을 호스팅할 계획입니다. 단일 Azure 데이터 센터에 장애가 발생하더라도 최소 두 개의 가상 머신을 계속 사용할 수 있도록 하려면 어떻게 배포해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 세 가상 머신 모두 단일 가용성 영역에 배포합니다.",
+      "B. 세 가상 머신 모두 단일 가용성 집합에 배포합니다.",
+      "C. 각 가상 머신을 별도의 가용성 영역에 배포합니다.",
+      "D. 각 가상 머신을 별도의 가용성 집합에 배포합니다."
+    ],
+    "answer": "C",
+    "explanation": "가용성 영역(Availability Zones)은 동일한 Azure 지역 내에서 물리적으로 분리된 위치입니다. 각 가상 머신을 별도의 가용성 영역에 배포하면 한 데이터 센터(영역)에 장애가 발생하더라도 다른 영역의 가상 머신은 영향을 받지 않아 고가용성을 보장할 수 있습니다. 이 경우 최소 두 대의 VM이 계속 실행됩니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 302,
+    "question": "Windows Server 2019를 실행하는 VM1 가상 머신을 Template1이라는 Azure Resource Manager 템플릿으로 저장했습니다. Template1을 사용하여 VM2라는 새 가상 머신을 배포할 때 구성할 수 있는 것은 무엇입니까?",
+    "condition": null,
+    "options": [
+      "A. 운영 체제",
+      "B. 관리자 사용자 이름",
+      "C. 가상 머신 크기",
+      "D. 리소스 그룹"
+    ],
+    "answer": "B",
+    "explanation": "기존 VM에서 템플릿을 내보낼 때 운영 체제, VM 크기, 리소스 그룹과 같은 대부분의 구성은 템플릿에 하드코딩되거나 매개 변수화됩니다. 그러나 보안상의 이유로 관리자 암호는 내보내지지 않으며, 일반적으로 관리자 사용자 이름과 암호는 배포 시 새롭게 입력하도록 요구됩니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 303,
+    "question": "VM1은 활성 인스턴스를 여러 개 지원하지 않는 재무 보고 앱(App1)을 호스팅합니다. 매월 말에 App1이 실행될 때 VM1의 CPU 사용량이 급증합니다. 매월 말에 VM1의 프로세서 성능을 높이기 위해 예약된 Runbook에 어떤 작업을 포함해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. VM1에 Azure 성능 진단 에이전트를 추가합니다.",
+      "B. VM1의 VM 크기 속성을 수정합니다.",
+      "C. VM1을 확장 집합에 추가합니다.",
+      "D. 구독의 vCPU 할당량을 늘립니다.",
+      "E. VM1에 Desired State Configuration(DSC) 확장을 추가합니다."
+    ],
+    "answer": "B",
+    "explanation": "CPU 사용량이 급증하는 특정 기간 동안 성능을 높이는 가장 직접적인 방법은 가상 머신의 크기(SKU)를 더 높은 사양으로 일시적으로 변경(스케일 업)하는 것입니다. Runbook을 사용하여 이 프로세스를 자동화할 수 있습니다. 작업이 끝나면 다시 원래 크기로 변경(스케일 다운)하여 비용을 절감할 수 있습니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 304,
+    "question": "ARM 템플릿을 사용하여 Windows Server 2019를 실행하는 여러 Azure 가상 머신을 가상 머신 확장 집합에 배포할 계획입니다. 배포 후 모든 가상 머신에서 NGINX를 사용할 수 있도록 하려면 무엇을 사용해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. Azure App Service의 배포 센터",
+      "B. Desired State Configuration (DSC) 확장",
+      "C. New-AzConfigurationAssignment cmdlet",
+      "D. Microsoft Intune 장치 구성 프로필"
+    ],
+    "answer": "B",
+    "explanation": "Azure Desired State Configuration(DSC) 확장을 사용하면 가상 머신이 프로비저닝될 때 특정 소프트웨어를 설치하거나 구성을 적용하는 등 원하는 상태를 정의하고 자동으로 관리할 수 있습니다. ARM 템플릿 내에서 DSC 확장을 정의하여 모든 인스턴스에 NGINX를 일관되게 설치할 수 있습니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 305,
+    "question": "다음과 같은 네트워크 프로필을 가진 Azure Kubernetes Service(AKS) 클러스터를 배포합니다. 이 구성에 대한 설명으로 옳은 것은 무엇입니까?",
+    "condition": "네트워크 프로필:\n- 네트워크 플러그인: kubenet\n- Pod CIDR: 10.244.0.0/16\n- 서비스 CIDR: 10.0.0.0/16\n- DNS 서비스 IP: 10.0.0.10",
+    "options": [
+      "A. 각 노드는 가상 네트워크에서 IP 주소를 받습니다.",
+      "B. Pod는 가상 네트워크의 IP 주소를 사용하여 서로 통신합니다.",
+      "C. 각 Pod는 가상 네트워크에서 IP 주소를 받습니다.",
+      "D. 노드 간 통신은 사용자 정의 라우팅을 사용합니다."
+    ],
+    "answer": "A",
+    "explanation": "kubenet 네트워크 플러그인을 사용하면 각 노드는 Azure 가상 네트워크 서브넷에서 IP 주소를 받습니다. 그러나 Pod는 노드 IP 주소 공간과 다른 별도의 CIDR 블록(Pod CIDR)에서 IP를 받으며, 노드 간의 Pod 통신은 라우팅 테이블을 통해 이루어집니다. Pod는 가상 네트워크에 직접 연결되지 않습니다."
+  },
+  {
+    "topic": "App Service",
+    "question_no": 306,
+    "question": "주어진 App Service 계획의 자동 크기 조정 구성에 따라, CPU 백분율이 15분 동안 60% 이상일 때 인스턴스 수는 어떻게 되며, 인스턴스 수가 4개로 증가한 후 다시 축소되기까지 최소 몇 분이 걸립니까?",
+    "condition": "자동 크기 조정 구성:\n- 최소 인스턴스: 2\n- 최대 인스턴스: 5\n- 기본 인스턴스: 2\n- 확장 규칙: CPU 백분율 > 70%일 때 인스턴스 1 증가 (기간: 10분)\n- 축소 규칙: CPU 백분율 < 30%일 때 인스턴스 1 감소 (기간: 10분)\n- 쿨다운: 5분",
+    "options": [
+      "A. 인스턴스 수는 2개이고, 축소까지 4분이 걸립니다.",
+      "B. 인스턴스 수는 2개이고, 축소까지 5분이 걸립니다.",
+      "C. 인스턴스 수는 4개이고, 축소까지 4분이 걸립니다.",
+      "D. 인스턴스 수는 4개이고, 축소까지 5분이 걸립니다."
+    ],
+    "answer": "B",
+    "explanation": "CPU 백분율이 60%인 것은 확장 규칙(>70%)이나 축소 규칙(<30%)의 임계값을 충족하지 않으므로 인스턴스 수는 기본값인 2개로 유지됩니다. 인스턴스 수가 4개로 증가한 후, 축소 작업이 발생하려면 쿨다운 기간인 5분이 지나야 합니다. 쿨다운은 크기 조정 작업 후 시스템이 안정될 때까지 기다리는 시간입니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 307,
+    "question": "Windows Server 2019를 실행하는 VM1에 로그인하여 C 드라이브와 D 드라이브에 파일을 만들고, 화면 보호기 시간 제한을 설정하고, 바탕 화면 배경을 변경했습니다. VM1을 재배포한 후 어떤 변경 사항이 손실됩니까?",
+    "condition": null,
+    "options": [
+      "A. 구성된 화면 보호기 시간 제한",
+      "B. 새 바탕 화면 배경",
+      "C. D 드라이브의 새 파일",
+      "D. C 드라이브의 새 파일"
+    ],
+    "answer": "C",
+    "explanation": "Azure VM을 재배포하면 가상 머신이 Azure 인프라 내의 다른 호스트 노드로 이동됩니다. 이 과정에서 OS 디스크(일반적으로 C 드라이브)와 데이터 디스크는 유지되지만, 임시 디스크(일반적으로 D 드라이브)는 비워집니다. 따라서 D 드라이브에 저장된 파일은 손실됩니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 308,
+    "question": "온-프레미스 가상 머신(VM1)의 디스크를 Azure 가상 머신의 템플릿으로 사용하려고 합니다. VM1의 설정 중 무엇을 구성해야 합니까?",
+    "condition": "VM1 설정:\n- 세대: 1세대\n- 보안 부팅: 비활성화됨\n- 디스크 형식: VHD",
+    "options": [
+      "A. 메모리",
+      "B. 네트워크 어댑터",
+      "C. 하드 드라이브",
+      "D. 프로세서",
+      "E. 통합 서비스"
+    ],
+    "answer": "C",
+    "explanation": "온-프레미스 VM을 Azure로 업로드하려면 가상 하드 디스크(VHD)가 고정 크기여야 합니다. 동적 확장 디스크는 지원되지 않습니다. 따라서 Azure에서 템플릿으로 사용하기 전에 하드 드라이브 설정을 확인하고 필요한 경우 고정 크기 VHD로 변환해야 합니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 309,
+    "question": "4개의 인스턴스를 가진 가상 머신 확장 집합(Scale1)이 있습니다. `get-azvmss` cmdlet을 실행한 결과, `overprovision` 속성이 `True`로 설정되어 있습니다. 이 설정에 대한 설명으로 옳은 것은 무엇입니까?",
+    "condition": "Scale1 구성:\n- 인스턴스 수: 4\n- 운영 체제: Windows Server 2016\n- 크기: Standard_D1_v2\n- Overprovision: True",
+    "options": [
+      "A. 확장 집합은 요청된 것보다 더 많은 VM을 시작한 다음, 성공적으로 프로비저닝된 후 초과분을 삭제합니다.",
+      "B. 확장 집합은 요청된 수의 VM을 시작하고, 프로비저닝에 실패한 VM이 있으면 추가 VM을 시작합니다.",
+      "C. 확장 집합은 요청된 수의 VM을 시작하고, 모든 VM이 프로비저닝에 성공하면 추가 VM을 시작합니다.",
+      "D. 확장 집합은 요청된 수의 VM만 시작합니다."
+    ],
+    "answer": "A",
+    "explanation": "`overprovision` 속성이 `True`로 설정되면, 확장 집합은 배포 성공률을 높이기 위해 요청된 인스턴스 수보다 더 많은 VM을 일시적으로 시작합니다. 요청된 수의 VM이 성공적으로 프로비저닝되면 추가로 시작된 VM은 자동으로 삭제됩니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 310,
+    "question": "관리자가 단일 ARM 템플릿을 사용하여 VM1이라는 가상 머신과 storage2라는 Azure Storage 계정을 배포했습니다. 배포에 사용된 템플릿을 확인하려면 어떤 블레이드로 이동해야 합니까?",
+    "condition": "구독 리소스:\n- 리소스 그룹: RG1\n- 스토리지 계정: storage1\n- BLOB 컨테이너: container1\n- 파일 공유: share1",
+    "options": [
+      "A. VM1",
+      "B. RG1",
+      "C. storage2",
+      "D. container1"
+    ],
+    "answer": "B",
+    "explanation": "Azure Resource Manager(ARM) 템플릿 배포는 리소스 그룹 수준에서 이루어집니다. 따라서 배포 기록과 사용된 템플릿을 보려면 해당 리소스가 배포된 리소스 그룹(이 경우 RG1)의 '배포' 블레이드로 이동해야 합니다."
+  },
+  {
+    "topic": "App Service",
+    "question_no": 311,
+    "question": "webapp1-test 슬롯에서 App1의 변경 사항을 테스트한 후, 이 슬롯을 webapp1-prod 슬롯과 교체했습니다. 그러나 App1에 성능 문제가 발생하여 이전 버전으로 최대한 빨리 되돌려야 합니다. 어떻게 해야 합니까?",
+    "condition": "배포 슬롯:\n- webapp1-prod (프로덕션)\n- webapp1-test (스테이징)",
+    "options": [
+      "A. webapp1을 다시 배포합니다.",
+      "B. 슬롯을 다시 교체합니다.",
+      "C. webapp1을 복제합니다.",
+      "D. App1의 백업을 복원합니다."
+    ],
+    "answer": "B",
+    "explanation": "Azure App Service의 배포 슬롯을 사용하면 다운타임 없이 새 버전을 배포할 수 있습니다. 문제가 발생했을 때 가장 빠르고 간단한 롤백 방법은 방금 교체했던 슬롯을 다시 교체(swap)하는 것입니다. 이렇게 하면 이전 프로덕션 버전이 즉시 다시 활성화됩니다."
+  },
+  {
+    "topic": "모니터링",
+    "question_no": 312,
+    "question": "VM1에 대한 모든 성공 및 실패한 연결 시도를 기록하려고 합니다. 어떤 두 가지 조치를 취해야 합니까?",
+    "condition": "VM1 구성:\n- 개인 IP: 10.0.0.4 (동적)\n- NSG: NSG1\n- 공용 IP: 없음\n- 가용성 집합: AVSet\n- 서브넷: 10.0.0.0/24\n- 관리 디스크: 아니요\n- 위치: 미국 동부",
+    "options": [
+      "A. 미국 동부 Azure 지역에서 Azure Network Watcher를 활성화합니다.",
+      "B. Azure Network Watcher 연결 모니터를 추가합니다.",
+      "C. Microsoft.LogAnalytics 공급자를 등록합니다.",
+      "D. Azure Storage 계정을 만듭니다.",
+      "E. Microsoft.Insights 리소스 공급자를 등록합니다.",
+      "F. Azure Network Watcher 흐름 로그를 활성화합니다."
+    ],
+    "answer": "F",
+    "explanation": "NSG 흐름 로그는 네트워크 보안 그룹을 통과하는 모든 IP 트래픽에 대한 정보를 기록하는 Azure Network Watcher의 기능입니다. 이를 활성화하면 VM1에 대한 모든 연결 시도(허용 및 거부)를 캡처할 수 있습니다. 흐름 로그를 저장하려면 Azure Storage 계정이 필요하며, 분석을 위해 Log Analytics와 통합할 수 있습니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 313,
+    "question": "5개의 인스턴스를 포함하는 가상 머신 확장 집합을 가능한 한 빨리 배포하려고 합니다. 어떻게 해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 5개의 가상 머신을 배포하고 각 가상 머신의 가용성 영역 설정을 구성합니다.",
+      "B. 5개의 가상 머신을 배포하고 각 가상 머신의 크기 설정을 구성합니다.",
+      "C. 오케스트레이션 모드가 'VM'으로 설정된 가상 머신 확장 집합 하나를 배포합니다.",
+      "D. 오케스트레이션 모드가 'ScaleSetVM'으로 설정된 가상 머신 확장 집합 하나를 배포합니다."
+    ],
+    "answer": "D",
+    "explanation": "가상 머신 확장 집합(VMSS)은 동일한 구성의 VM 그룹을 배포하고 관리하는 데 사용됩니다. 'ScaleSetVM'(Uniform 오케스트레이션) 모드는 대규모의 동일한 VM을 신속하게 배포하는 데 최적화되어 있습니다. 'VM'(Flexible 오케스트레이션) 모드는 이기종 VM을 관리하는 데 더 중점을 둡니다."
+  },
+  {
+    "topic": "App Service",
+    "question_no": 314,
+    "question": "계획된 Azure 웹 앱 배포를 위해 생성해야 하는 App Service 계획의 최소 개수는 몇 개입니까?",
+    "condition": "웹 앱 배포 계획:\n- WebApp1: RG1, Windows, West US\n- WebApp2: RG1, Windows, West US\n- WebApp3: RG2, Linux, West US\n- WebApp4: RG2, Linux, East US",
+    "options": [
+      "A. 1",
+      "B. 2",
+      "C. 3",
+      "D. 4"
+    ],
+    "answer": "C",
+    "explanation": "App Service 계획은 웹 앱이 실행되는 컴퓨팅 리소스의 집합을 정의합니다. 계획은 특정 지역, 운영 체제 및 가격 책정 계층에 연결됩니다. 따라서 (Windows, West US), (Linux, West US), (Linux, East US)에 대해 각각 하나씩, 총 3개의 App Service 계획이 필요합니다. WebApp1과 WebApp2는 동일한 계획을 공유할 수 있습니다."
+  },
+  {
+    "topic": "모니터링",
+    "question_no": 315,
+    "question": "주어진 예산 구성에 따라, 8월 15일에 VM1의 전원을 끄면 어떤 일이 발생하며, 8월 28일에 예산이 101%에 도달하면 어떤 일이 발생합니까?",
+    "condition": "예산 구성:\n- 이름: Budget1\n- 범위: RG1\n- 재설정 기간: 월별\n- 생성일: 2022년 8월 1일\n- 만료일: 2023년 7월 31일\n- 예산 금액: 100달러\n- 경고 조건: 실제 지출 80% 및 100%일 때 AG1 작업 그룹에 알림. 100%일 때 RG1의 모든 VM 종료.",
+    "options": [
+      "A. 8월 15일에 VM1이 꺼지고, 8월 28일에 admin@contoso.com으로 이메일이 전송됩니다.",
+      "B. 8월 15일에 아무 일도 일어나지 않고, 8월 28일에 admin@contoso.com으로 이메일이 전송됩니다.",
+      "C. 8월 15일에 VM1이 꺼지고, 8월 28일에 아무 일도 일어나지 않습니다.",
+      "D. 8월 15일에 아무 일도 일어나지 않고, 8월 28일에 아무 일도 일어나지 않습니다."
+    ],
+    "answer": "B",
+    "explanation": "예산 작업 그룹은 예산 임계값에 도달했을 때만 트리거됩니다. 8월 15일에 VM1을 끄는 것은 예산과 관련 없는 수동 작업이므로 예산으로 인해 아무 일도 일어나지 않습니다. 8월 28일에 예산이 101%에 도달하면 100% 임계값을 초과했으므로, 구성된 대로 AG1 작업 그룹(admin@contoso.com)에 알림 이메일이 전송되고 RG1의 모든 VM이 종료됩니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 316,
+    "question": "RG1 리소스 그룹에 템플릿을 사용하여 배포된 리소스의 생성 날짜와 시간을 확인하려고 합니다. 구독 블레이드에서 구독을 선택한 후 '프로그래밍 방식 배포'를 클릭하는 방법이 목표를 충족합니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "'프로그래밍 방식 배포' 옵션은 클래식(ASM) 배포 모델에 대한 정보를 표시합니다. ARM 템플릿 배포 기록을 확인하려면 리소스 그룹의 '배포' 블레이드로 이동해야 합니다. 여기에서 배포 날짜, 시간, 상태 및 사용된 템플릿을 볼 수 있습니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 317,
+    "question": "VM1을 VNET1에서 VNET2로 연결하려고 합니다. 새 네트워크 인터페이스를 만든 다음 VM1에 추가하는 방법이 목표를 충족합니까?",
+    "condition": "리소스:\n- RG1: West US, VM1 포함\n- RG2: East US, VNET2 포함\n- VNET1: West US",
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "실행 중인 가상 머신에 네트워크 인터페이스를 추가하거나 제거할 수 있지만, 기본 네트워크 인터페이스를 변경할 수는 없습니다. 또한 VM은 네트워크 인터페이스와 동일한 위치 및 가상 네트워크에 있어야 합니다. VM을 다른 VNet으로 이동하려면 일반적으로 VM을 삭제(디스크 유지)하고 새 VNet에 새 VM을 만든 다음 기존 디스크를 연결해야 합니다."
+  },
+  {
+    "topic": "Azure AD",
+    "question_no": 318,
+    "question": "adatum.com 테넌트에서 Computer1을 Azure AD에 가입시킨 후, Computer1의 로컬 관리자 그룹에 속하는 사용자는 누구입니까?",
+    "condition": "adatum.com 구성:\n- 사용자: User1, User2 (전역 관리자), User3 (클라우드 장치 관리자), User4 (사용자 관리자)\n- '사용자가 장치를 Azure AD에 가입할 수 있음' 설정: User1\n- 'Azure AD 가입 장치의 추가 로컬 관리자' 설정: 없음",
+    "options": [
+      "A. User1만",
+      "B. User2만",
+      "C. User1과 User2만",
+      "D. User1, User2, User3만",
+      "E. User1, User2, User3, User4"
+    ],
+    "answer": "C",
+    "explanation": "장치를 Azure AD에 가입시킨 사용자는 기본적으로 해당 장치의 로컬 관리자 그룹에 추가됩니다. 또한 전역 관리자 역할이 할당된 모든 사용자는 모든 Azure AD 가입 장치에서 로컬 관리자 권한을 갖습니다. 따라서 User1과 User2가 로컬 관리자가 됩니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 319,
+    "question": "RG1(서유럽)에 있는 웹 앱 App1을 RG3(북유럽)으로 이동할 수 있습니까? 그리고 RG1(서유럽)을 RG2(북유럽)로 이동할 수 있습니까?",
+    "condition": "구독1:\n- RG1 (서유럽)\n- RG2 (북유럽)\n구독2:\n- RG3 (북유럽)",
+    "options": [
+      "A. App1 이동 가능, RG1 이동 가능",
+      "B. App1 이동 가능, RG1 이동 불가능",
+      "C. App1 이동 불가능, RG1 이동 가능",
+      "D. App1 이동 불가능, RG1 이동 불가능"
+    ],
+    "answer": "D",
+    "explanation": "Azure 리소스는 다른 리소스 그룹이나 다른 구독으로 이동할 수 있지만, 다른 지역으로는 이동할 수 없습니다. App1은 서유럽에서 북유럽으로 이동해야 하므로 불가능합니다. 리소스 그룹 자체는 이동할 수 없으며, 그 안의 리소스만 이동할 수 있습니다."
+  },
+  {
+    "topic": "모니터링",
+    "question_no": 320,
+    "question": "Azure Cloud Shell에서 ARM 템플릿을 사용하여 가상 머신을 만들려고 합니다. 명령을 어떻게 완성해야 합니까?",
+    "condition": "리소스:\n- 리소스 그룹: RG1\n- 스토리지 계정: storage1\n- 컨테이너: templates\n- 템플릿 파일: template.json",
+    "options": [
+      "A. `az group deployment create --resource-group RG1 --template-uri https://storage1.blob.core.windows.net/templates/template.json`",
+      "B. `az deployment create --resource-group RG1 --template-file template.json`",
+      "C. `New-AzResourceGroupDeployment -ResourceGroupName RG1 -TemplateFile template.json`",
+      "D. `New-AzDeployment -ResourceGroupName RG1 -TemplateUri https://storage1.blob.core.windows.net/templates/template.json`"
+    ],
+    "answer": "A",
+    "explanation": "주어진 명령은 Azure CLI를 사용하여 ARM 템플릿을 배포하는 것입니다. 스토리지 계정의 URI에서 템플릿을 배포하려면 `az group deployment create` (또는 `az deployment group create`) 명령과 `--template-uri` 매개변수를 사용해야 합니다. `--resource-group` 매개변수는 대상 리소스 그룹을 지정합니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 321,
+    "question": "AKS1이라는 Azure Kubernetes Service(AKS) 클러스터에 YAML 파일을 배포하려고 합니다. Azure Cloud Shell에서 `az aks` 명령을 실행하는 것이 목표를 달성합니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "`az aks` 명령은 AKS 클러스터 자체를 생성, 관리, 삭제하는 데 사용됩니다. 클러스터 내에 애플리케이션(YAML 파일로 정의된)을 배포하려면 Kubernetes의 기본 명령줄 도구인 `kubectl`을 사용해야 합니다. (`kubectl apply -f <your-yaml-file>`)."
+  },
+  {
+    "topic": "모니터링",
+    "question_no": 322,
+    "question": "VM1의 시스템 이벤트 로그에 한 시간 내에 두 개 이상의 오류 이벤트가 기록될 때 Azure에서 경고를 생성하려고 합니다. Log Analytics 작업 영역을 만들고, 데이터 설정을 구성하고, VM에 Microsoft Monitoring Agent를 설치한 다음, Azure Monitor에서 Log Analytics 작업 영역을 소스로 지정하여 경고를 만드는 방법이 목표를 달성합니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "A",
+    "explanation": "이 솔루션은 올바른 접근 방식입니다. Microsoft Monitoring Agent(또는 최신 Azure Monitor Agent)를 사용하여 VM에서 Log Analytics 작업 영역으로 이벤트 로그를 수집합니다. 그런 다음, Azure Monitor에서 해당 작업 영역의 데이터를 쿼리하는 로그 경고 규칙을 만들어 특정 조건(예: 1시간 내 2개 이상의 오류 이벤트)이 충족될 때 경고를 트리거할 수 있습니다."
+  },
+  {
+    "topic": "모니터링",
+    "question_no": 323,
+    "question": "VM1의 시스템 이벤트 로그에 한 시간 내에 두 개 이상의 오류 이벤트가 기록될 때 Azure에서 경고를 생성하려고 합니다. Log Analytics 작업 영역을 만들고, 데이터 설정을 구성하고, VM에 Microsoft Monitoring Agent를 설치한 다음, Azure Monitor에서 Log Analytics 작업 영역을 소스로 지정하여 경고를 만드는 방법이 목표를 달성합니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "A",
+    "explanation": "이 질문은 이전 질문과 동일한 시나리오와 해결책을 제시합니다. Microsoft Monitoring Agent를 통해 Log Analytics 작업 영역으로 로그를 수집하고, 수집된 데이터를 기반으로 Azure Monitor에서 로그 경고 규칙을 생성하는 것은 VM 이벤트에 대한 경고를 설정하는 올바른 방법입니다."
+  },
+  {
+    "topic": "백업 및 복구",
+    "question_no": 324,
+    "question": "VM1의 Folder1을 백업했습니다. 이 백업을 VM2로 복원하려고 합니다. 가장 먼저 해야 할 일은 무엇입니까?",
+    "condition": "리소스:\n- VM1 (Windows Server 2016)\n- VM2 (Windows Server 2016)\n- Vault1 (Recovery Services 자격 증명 모음)",
+    "options": [
+      "A. VM1에 Windows Server 백업 기능을 설치합니다.",
+      "B. VM2에 Microsoft Azure Recovery Services 에이전트를 설치합니다.",
+      "C. VM1에 Microsoft Azure Recovery Services 에이전트를 설치합니다.",
+      "D. VM2에 Windows Server 백업 기능을 설치합니다."
+    ],
+    "answer": "B",
+    "explanation": "Azure Backup을 사용하여 파일 및 폴더 수준 복구를 수행하려면, 복원 대상 서버에 Microsoft Azure Recovery Services(MARS) 에이전트가 설치되어 있어야 합니다. 이 에이전트는 Recovery Services 자격 증명 모음과 통신하여 백업 데이터에 접근하고 파일을 복원하는 역할을 합니다. 따라서 VM2에 MARS 에이전트를 설치하는 것이 첫 번째 단계입니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 325,
+    "question": "여러 데이터 디스크가 있는 가상 머신을 만들기 위해 ARM 템플릿을 완성해야 합니다. 템플릿의 `storageProfile` 섹션에서 여러 디스크를 정의하려면 어떤 속성을 사용해야 합니까?",
+    "condition": "ARM 템플릿 일부:\n`\"storageProfile\": { ... }`",
+    "options": [
+      "A. `dataDisks`",
+      "B. `disks`",
+      "C. `properties`",
+      "D. `osDisk`"
+    ],
+    "answer": "A",
+    "explanation": "ARM 템플릿에서 가상 머신의 스토리지 프로필을 정의할 때, `osDisk` 속성은 운영 체제 디스크를 지정하고, `dataDisks` 속성은 연결할 데이터 디스크의 배열(목록)을 지정하는 데 사용됩니다. 각 데이터 디스크에 대해 LUN, 크기, 생성 옵션 등을 정의할 수 있습니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 326,
+    "question": "VM1에 새 네트워크 인터페이스(NIC2)를 만들려고 합니다. RG1과 West US 지역에 NIC2를 만드는 것이 목표를 달성합니까?",
+    "condition": "리소스:\n- VM1: RG1, West US\n- VNET1: RG1, West US\n- VNET2: RG2, Central US\n- NIC1: VM1에 연결됨, VNET1에 속함",
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "A",
+    "explanation": "가상 머신에 추가 네트워크 인터페이스를 연결하려면, 새 네트워크 인터페이스가 가상 머신과 동일한 위치(지역)에 있어야 합니다. 이 경우 VM1과 제안된 NIC2는 모두 West US 지역에 있으므로 생성이 가능합니다. 또한, 동일한 리소스 그룹에 만드는 것이 일반적입니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 327,
+    "question": "VM1에 새 네트워크 인터페이스(NIC2)를 만들려고 합니다. RG2와 Central US 지역에 NIC2를 만드는 것이 목표를 달성합니까?",
+    "condition": "리소스:\n- VM1: RG1, West US\n- VNET1: RG1, West US\n- VNET2: RG2, Central US\n- NIC1: VM1에 연결됨, VNET1에 속함",
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "가상 머신에 네트워크 인터페이스를 연결하려면 두 리소스가 동일한 위치(지역)에 있어야 합니다. VM1은 West US에 있고 제안된 NIC2는 Central US에 있으므로, 이 두 리소스를 함께 사용할 수 없습니다. 따라서 이 솔루션은 목표를 달성하지 못합니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 328,
+    "question": "VM1에 새 네트워크 인터페이스(NIC2)를 만들려고 합니다. RG2와 West US 지역에 NIC2를 만드는 것이 목표를 달성합니까?",
+    "condition": "리소스:\n- VM1: RG1, West US\n- VNET1: RG1, West US\n- VNET2: RG2, Central US\n- NIC1: VM1에 연결됨, VNET1에 속함",
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "A",
+    "explanation": "가상 머신과 네트워크 인터페이스는 동일한 위치(지역)에 있어야 하지만, 반드시 동일한 리소스 그룹에 있을 필요는 없습니다. VM1과 제안된 NIC2는 모두 West US 지역에 있으므로, 서로 다른 리소스 그룹에 있더라도 NIC2를 생성하고 VM1에 연결할 수 있습니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 329,
+    "question": "주어진 ARM 템플릿을 사용하여 리소스 그룹을 만들고 그 안에 Azure Storage 계정을 배포하려고 합니다. 어떤 cmdlet을 실행해야 합니까?",
+    "condition": "ARM 템플릿 내용:\n`\"$schema\": \"https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#\"`\n`\"resources\": [ { \"type\": \"Microsoft.Resources/resourceGroups\", ... }, ... ]`",
+    "options": [
+      "A. `New-AzResource`",
+      "B. `New-AzResourceGroupDeployment`",
+      "C. `New-AzTenantDeployment`",
+      "D. `New-AzSubscriptionDeployment`"
+    ],
+    "answer": "D",
+    "explanation": "템플릿의 스키마 URL(`subscriptionDeploymentTemplate.json`)은 이 템플릿이 구독 수준 배포를 위한 것임을 나타냅니다. 구독 수준 배포는 리소스 그룹 자체를 생성하는 데 사용될 수 있습니다. 이러한 템플릿을 배포하는 데 사용되는 PowerShell cmdlet은 `New-AzSubscriptionDeployment`입니다."
+  },
+  {
+    "topic": "App Service",
+    "question_no": 330,
+    "question": "WebApp1의 일일 백업을 구성하려고 하며, 백업에서 Folder2를 제외해야 합니다. 이를 위해 먼저 무엇을 만들어야 하며, Folder2를 제외하기 위해 무엇을 사용해야 합니까?",
+    "condition": "WebApp1 폴더 구조:\n- Folder1\n- Folder2",
+    "options": [
+      "A. 먼저 스토리지 계정을 만들고, 제외를 위해 `_backup.filter` 파일을 사용합니다.",
+      "B. 먼저 Recovery Services 자격 증명 모음을 만들고, 제외를 위해 제외 설정을 사용합니다.",
+      "C. 먼저 스토리지 계정을 만들고, 제외를 위해 제외 설정을 사용합니다.",
+      "D. 먼저 Recovery Services 자격 증명 모음을 만들고, 제외를 위해 `_backup.filter` 파일을 사용합니다."
+    ],
+    "answer": "A",
+    "explanation": "Azure App Service의 기본 제공 백업 기능은 백업 파일을 저장할 Azure Storage 계정이 필요합니다. 특정 파일이나 폴더를 백업에서 제외하려면 웹 앱의 `wwwroot` 디렉터리에 `_backup.filter`라는 파일을 만들고, 그 안에 제외할 경로(예: `\\site\\wwwroot\\Folder2`)를 지정합니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 331,
+    "question": "ARM 템플릿을 사용하여 Windows Server 2019를 실행하는 여러 Azure 가상 머신을 가상 머신 확장 집합에 배포할 계획입니다. 배포 후 모든 가상 머신에서 NGINX를 사용할 수 있도록 하려면 무엇을 사용해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. `Publish-AzVMDscConfiguration` cmdlet",
+      "B. Azure Application Insights",
+      "C. Azure 사용자 지정 스크립트 확장",
+      "D. Microsoft Endpoint Manager 장치 구성 프로필"
+    ],
+    "answer": "C",
+    "explanation": "Azure 사용자 지정 스크립트 확장(Custom Script Extension)은 가상 머신이 프로비저닝된 후 스크립트를 다운로드하고 실행하는 가장 간단한 방법 중 하나입니다. NGINX 설치 명령이 포함된 PowerShell 또는 배치 스크립트를 작성하고, ARM 템플릿에서 이 확장을 사용하여 모든 VM 인스턴스에서 스크립트를 실행하도록 구성할 수 있습니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 332,
+    "question": "Windows 10 가상 머신을 Active Directory 도메인에 가입시키는 ARM 템플릿을 작성하려고 합니다. 템플릿의 `resources` 섹션에서 어떤 `type`과 `name`을 사용해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 유형: `Microsoft.Compute/virtualMachines/extensions`, 이름: `JsonADDomainExtension`",
+      "B. 유형: `Microsoft.Compute/virtualMachines`, 이름: `domainJoin`",
+      "C. 유형: `Microsoft.Compute/virtualMachines/extensions`, 이름: `domainJoin`",
+      "D. 유형: `Microsoft.Compute/virtualMachines`, 이름: `JsonADDomainExtension`"
+    ],
+    "answer": "A",
+    "explanation": "가상 머신을 Active Directory 도메인에 가입시키는 작업은 VM 확장을 통해 수행됩니다. 이 확장의 공식적인 이름은 `JsonADDomainExtension`이며, 리소스 유형은 `Microsoft.Compute/virtualMachines/extensions`입니다. 템플릿에서 이 확장을 정의하고 도메인 이름, OU 경로, 자격 증명과 같은 필요한 속성을 제공해야 합니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 333,
+    "question": "가용성 집합(AVSet1)에 있는 세 개의 VM 중 VM1의 크기를 조정하려고 하지만 원하는 크기를 사용할 수 없습니다. 이 문제를 해결하기 위해 가장 먼저 무엇을 해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 근접 배치 그룹을 만듭니다.",
+      "B. VM1의 할당을 취소합니다.",
+      "C. AVSet1을 관리형 가용성 집합으로 변환합니다.",
+      "D. VM2와 VM3을 중지합니다."
+    ],
+    "answer": "B",
+    "explanation": "가용성 집합 내의 모든 VM은 동일한 물리적 하드웨어 클러스터를 공유합니다. 특정 VM 크기를 사용하려면 해당 클러스터에 충분한 리소스가 있어야 합니다. VM의 할당을 취소(중지하고 할당 해제)하면 VM이 클러스터에서 해제됩니다. 그런 다음 VM을 다시 시작하면 Azure가 요청된 크기를 지원하는 새 클러스터에 VM을 배치할 수 있습니다. 이 경우 가용성 집합의 모든 VM을 중지하고 할당 해제해야 할 수도 있습니다."
+  },
+  {
+    "topic": "Kubernetes",
+    "question_no": 334,
+    "question": "주어진 구성으로 Azure Kubernetes Service(AKS) 클러스터를 만들 때, 이 클러스터는 몇 개의 노드 풀과 몇 개의 사용자 노드를 가지게 됩니까?",
+    "condition": "AKS 생성 구성:\n- 노드 수: 3\n- 노드 풀 활성화: 예\n- 추가 노드 풀: 없음",
+    "options": [
+      "A. 1개의 노드 풀, 3개의 사용자 노드",
+      "B. 1개의 노드 풀, 4개의 사용자 노드",
+      "C. 2개의 노드 풀, 3개의 사용자 노드",
+      "D. 2개의 노드 풀, 4개의 사용자 노드"
+    ],
+    "answer": "A",
+    "explanation": "AKS 클러스터를 만들 때 지정하는 초기 '노드 수'는 기본 시스템 노드 풀에 생성될 노드의 수를 의미합니다. 추가 노드 풀을 만들지 않았으므로, 클러스터는 하나의 노드 풀(기본 시스템 노드 풀)과 3개의 사용자 워크로드를 실행할 노드를 가지게 됩니다."
+  },
+  {
+    "topic": "Kubernetes",
+    "question_no": 335,
+    "question": "AKS 클러스터(Cluster1)의 노드 풀(Pool1)에 대해 조정된 업그레이드를 수행하려고 합니다. 업그레이드를 위해 2개의 새 노드를 배포하고 비용을 최소화해야 합니다. 명령을 어떻게 완성해야 합니까?",
+    "condition": "현재 상태:\n- 클러스터: Cluster1\n- 노드 풀: Pool1\n- 노드 수: 4",
+    "options": [
+      "A. `az aks nodepool upgrade --cluster-name Cluster1 --name Pool1 --max-surge 2`",
+      "B. `az aks nodepool update --cluster-name Cluster1 --name Pool1 --max-surge 50%`",
+      "C. `az aks nodepool upgrade --cluster-name Cluster1 --name Pool1 --max-surge 50%`",
+      "D. `az aks nodepool update --cluster-name Cluster1 --name Pool1 --max-surge 2`"
+    ],
+    "answer": "C",
+    "explanation": "노드 풀을 업그레이드하려면 `az aks nodepool upgrade` 명령을 사용합니다. `--max-surge` 매개변수는 업그레이드 중에 추가로 생성할 노드의 수(정수) 또는 비율(%)을 지정합니다. 4개 노드 풀에서 2개의 추가 노드를 사용하려면 `--max-surge 50%` (4의 50%는 2)를 지정하는 것이 올바릅니다. 정수 '2'를 사용하는 것도 가능합니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 336,
+    "question": "주어진 ARM 템플릿을 배포한 후의 상태에 대한 설명으로 옳은 것은 무엇입니까?",
+    "condition": "ARM 템플릿:\n- 리소스 유형: `Microsoft.Storage/storageAccounts`\n- 이름: `[parameters('storageAccountName')]`\n- 위치: `[resourceGroup().location]`\n- 종류: `StorageV2`\n- SKU: `Standard_LRS`\n배포 명령:\n`New-AzResourceGroup -Name RG1 -Location northeurope`\n`New-AzResourceGroupDeployment -ResourceGroupName RG1 -TemplateFile deploy.json -storageAccountName storage1`",
+    "options": [
+      "A. 스토리지 계정이 생성되고 RG1과 동일한 위치에 있습니다.",
+      "B. 스토리지 계정이 생성되고 RG1과 다른 위치에 있을 수 있습니다.",
+      "C. 배포가 실패합니다.",
+      "D. 템플릿의 유효성 검사가 실패합니다."
+    ],
+    "answer": "A",
+    "explanation": "템플릿은 `[resourceGroup().location]` 함수를 사용하여 스토리지 계정의 위치를 리소스 그룹의 위치와 동일하게 설정합니다. 배포 명령에서 RG1 리소스 그룹은 `northeurope`에 생성되었으므로, storage1 스토리지 계정 역시 `northeurope`에 성공적으로 생성됩니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 337,
+    "question": "Azure 컨테이너 레지스트리(Registry1)의 이미지(image1)를 사용하여 컨테이너 인스턴스를 배포할 수 없습니다. 이 문제를 해결하기 위해 Registry1에서 관리자 사용자를 활성화하는 것이 올바른 해결책입니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "A",
+    "explanation": "Azure 컨테이너 인스턴스(ACI)가 컨테이너 레지스트리(ACR)에서 이미지를 가져오려면 인증이 필요합니다. 가장 간단한 방법 중 하나는 ACR의 관리자 사용자 계정을 활성화하고 해당 사용자 이름과 암호를 ACI 배포 시 제공하는 것입니다. 서비스 주체나 관리 ID를 사용하는 것이 더 안전한 방법이지만, 관리자 사용자를 활성화하는 것도 유효한 해결책입니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 338,
+    "question": "ARM 템플릿을 사용하여 RG1에 새 리소스를 배포하고, 배포 전에 RG1의 모든 기존 리소스를 제거하려고 합니다. 명령을 어떻게 완성해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. `New-AzResourceGroupDeployment -ResourceGroupName RG1 -Mode Complete`",
+      "B. `New-AzResourceGroupDeployment -ResourceGroupName RG1 -Mode Incremental`",
+      "C. `Set-AzResourceGroup -Name RG1 -Mode Complete`",
+      "D. `New-AzDeployment -ResourceGroupName RG1 -Mode Full`"
+    ],
+    "answer": "A",
+    "explanation": "ARM 템플릿 배포에는 두 가지 모드가 있습니다. 'Incremental'(기본값)은 템플릿에 없는 기존 리소스를 그대로 둡니다. 'Complete' 모드는 템플릿에 정의되지 않은 리소스 그룹 내의 모든 기존 리소스를 삭제합니다. 따라서 요구 사항을 충족하려면 `-Mode Complete`를 사용해야 합니다."
+  },
+  {
+    "topic": "App Service",
+    "question_no": 339,
+    "question": "주어진 자동 크기 조정 규칙에 따라, 30분 동안 CPU 사용량이 50%일 때 App1의 인스턴스 수는 몇 개가 되며, CPU 사용량이 90%로 증가하면 인스턴스 수는 몇 개가 됩니까?",
+    "condition": "자동 크기 조정 규칙:\n- 최소 인스턴스: 2\n- 최대 인스턴스: 8\n- 기본 인스턴스: 2\n- 확장 규칙: CPU > 80%일 때 2 증가\n- 축소 규칙: CPU < 20%일 때 1 감소",
+    "options": [
+      "A. 30분 후 3개, 90%에서 5개",
+      "B. 30분 후 2개, 90%에서 4개",
+      "C. 30분 후 3개, 90%에서 4개",
+      "D. 30분 후 2개, 90%에서 5개"
+    ],
+    "answer": "B",
+    "explanation": "CPU 사용량이 50%일 때는 확장(>80%) 또는 축소(<20%) 규칙이 트리거되지 않으므로 인스턴스 수는 기본값인 2개로 유지됩니다. CPU 사용량이 90%로 증가하면 확장 규칙이 트리거되어 인스턴스 수가 2개 증가하므로 총 4개가 됩니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 340,
+    "question": "어떤 인스턴스를 단일 컨테이너 그룹에 배포할 수 있습니까?",
+    "condition": "인스턴스 배포 계획:\n- Instance1: Linux, 2 vCPU, 4GB RAM\n- Instance2: Linux, 2 vCPU, 4GB RAM\n- Instance3: Windows, 2 vCPU, 4GB RAM\n- Instance4: Windows, 2 vCPU, 4GB RAM",
+    "options": [
+      "A. Instance1만",
+      "B. Instance2만",
+      "C. Instance1과 Instance2만",
+      "D. Instance3과 Instance4만"
+    ],
+    "answer": "C",
+    "explanation": "Azure 컨테이너 그룹 내의 모든 컨테이너는 동일한 운영 체제 유형(Linux 또는 Windows)을 공유해야 합니다. 따라서 Linux 기반인 Instance1과 Instance2는 함께 배포할 수 있고, Windows 기반인 Instance3과 Instance4는 함께 배포할 수 있지만, Linux와 Windows 컨테이너를 동일한 그룹에 혼합할 수는 없습니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 341,
+    "question": "Azure 컨테이너 레지스트리(contoso2023)에 대해 전용 데이터 엔드포인트를 활성화하려고 합니다. 어떤 두 가지 설정을 구성해야 합니까?",
+    "condition": "레지스트리 정보:\n- 이름: contoso2023\n- SKU: Premium",
+    "options": [
+      "A. 네트워킹 및 속성",
+      "B. 암호화 및 ID",
+      "C. 속성 및 리포지토리",
+      "D. 네트워킹 및 암호화"
+    ],
+    "answer": "A",
+    "explanation": "전용 데이터 엔드포인트는 Azure 컨테이너 레지스트리의 Premium SKU에서 사용할 수 있는 기능입니다. 이를 활성화하려면 먼저 '네트워킹' 설정에서 데이터 엔드포인트를 활성화해야 합니다. 그런 다음 '속성'에서 활성화된 데이터 엔드포인트의 라우팅 구성을 확인할 수 있습니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 342,
+    "question": "Azure Firewall Premium 인스턴스를 배포할 계획입니다. 어떤 공용 IP 주소를 사용할 수 있습니까?",
+    "condition": "공용 IP 주소:\n- IP1: Standard SKU, 기본\n- IP2: Standard SKU, 전역\n- IP3: Basic SKU, 동적\n- IP4: Basic SKU, 정적\n- IP5: Standard SKU, 지역",
+    "options": [
+      "A. IP2만",
+      "B. IP1 및 IP2만",
+      "C. IP1, IP2, IP5만",
+      "D. IP1, IP2, IP4, IP5만"
+    ],
+    "answer": "C",
+    "explanation": "Azure Firewall Premium은 Standard SKU의 공용 IP 주소만 지원합니다. Basic SKU의 IP 주소(IP3, IP4)는 사용할 수 없습니다. Standard SKU 중에서는 기본, 전역, 지역 유형(IP1, IP2, IP5) 모두 사용 가능합니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 343,
+    "question": "가상 머신을 배포하는 ARM 템플릿을 완성해야 합니다. `osProfile` 섹션에서 관리자 계정의 암호를 설정하려면 어떤 속성을 사용해야 합니까?",
+    "condition": "ARM 템플릿 일부:\n`\"osProfile\": { \"adminUsername\": \"localadmin\", ... }`",
+    "options": [
+      "A. `adminPassword`",
+      "B. `password`",
+      "C. `windowsConfiguration`",
+      "D. `secrets`"
+    ],
+    "answer": "A",
+    "explanation": "ARM 템플릿의 `osProfile` 섹션에서 가상 머신의 관리자 계정을 설정할 때, 사용자 이름은 `adminUsername` 속성으로, 암호는 `adminPassword` 속성으로 지정합니다. 보안을 위해 암호는 매개 변수로 전달하고 `securestring` 유형을 사용하는 것이 좋습니다."
+  },
+  {
+    "topic": "App Service",
+    "question_no": 344,
+    "question": "WebApp1에 대해 `app.contoso.com`이라는 사용자 지정 도메인을 사용하고 최대 8개 인스턴스까지 자동 확장되도록 하려고 합니다. 비용을 최소화하려면 어떤 가격 책정 계획과 어떤 유형의 DNS 레코드를 사용해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 가격 책정 계획: 표준, DNS 레코드: CNAME",
+      "B. 가격 책정 계획: 기본, DNS 레코드: A",
+      "C. 가격 책정 계획: 표준, DNS 레코드: A",
+      "D. 가격 책정 계획: 기본, DNS 레코드: CNAME"
+    ],
+    "answer": "C",
+    "explanation": "사용자 지정 도메인과 자동 확장을 모두 지원하는 가장 저렴한 App Service 계획은 '표준(Standard)' 계층입니다. '기본(Basic)' 계층은 자동 확장을 지원하지 않습니다. 루트 도메인이 아닌 하위 도메인(`app.contoso.com`)을 매핑할 때는 일반적으로 CNAME 레코드를 사용하지만, App Service는 A 레코드를 사용하여 사용자 지정 도메인을 매핑하는 것도 지원하며 더 널리 사용됩니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 345,
+    "question": "주어진 Azure Compute Gallery 및 이미지 정의 구성에 따라, Image1의 이미지 버전을 만들 수 있는 가상 머신과 Image1을 사용하여 가상 머신을 배포할 수 있는 지역은 어디입니까?",
+    "condition": "구성:\n- ComputeGallery1: 위치 West US\n- Image1 정의: OS 유형 Windows, OS 상태 일반화, 위치 West US\n- VM1: 위치 West US, OS Windows Server 2022\n- VM2: 위치 East US, OS Windows Server 2022",
+    "options": [
+      "A. VM1에서 버전 생성 가능, West US 및 East US에 배포 가능",
+      "B. VM1에서 버전 생성 가능, West US에만 배포 가능",
+      "C. VM2에서 버전 생성 가능, West US 및 East US에 배포 가능",
+      "D. VM2에서 버전 생성 가능, East US에만 배포 가능"
+    ],
+    "answer": "B",
+    "explanation": "Azure Compute Gallery에서 이미지 버전을 만들려면 소스 가상 머신이 갤러리와 동일한 지역에 있어야 합니다. 따라서 West US에 있는 VM1만 사용할 수 있습니다. 이미지 버전을 다른 지역에 복제하지 않는 한, 해당 이미지는 갤러리가 있는 지역(West US)에서만 가상 머신을 배포하는 데 사용할 수 있습니다."
+  },
+  {
+    "topic": "App Service",
+    "question_no": 346,
+    "question": "계획된 Azure 웹 앱 배포를 위해 생성해야 하는 App Service 계획의 최소 개수는 몇 개입니까?",
+    "condition": "웹 앱 배포 계획:\n- WebApp1: RG1, Windows, West US\n- WebApp2: RG1, Windows, West US\n- WebApp3: RG2, Linux, West US\n- WebApp4: RG2, Linux, East US",
+    "options": [
+      "A. 1",
+      "B. 2",
+      "C. 3",
+      "D. 4"
+    ],
+    "answer": "C",
+    "explanation": "App Service 계획은 특정 지역, 운영 체제, 가격 책정 계층의 조합으로 정의됩니다. 따라서 (Windows, West US), (Linux, West US), (Linux, East US)에 대해 각각 하나씩, 총 3개의 App Service 계획이 필요합니다. 동일한 계획(Windows, West US)을 사용하는 WebApp1과 WebApp2는 하나의 계획을 공유할 수 있습니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 347,
+    "question": "주어진 ARM 템플릿과 배포 명령을 실행한 후, storage1 스토리지 계정은 어떤 리소스 그룹에 생성되며, storage1의 위치는 어디입니까?",
+    "condition": "구독 리소스 그룹:\n- RG1 (northeurope)\n- RG2 (westeurope)\nARM 템플릿:\n- `resourceGroup` 매개변수 기본값: `[resourceGroup().name]`\n- `location` 매개변수 기본값: `[resourceGroup().location]`\n배포 명령:\n`New-AzResourceGroupDeployment -ResourceGroupName RG1 -TemplateFile deploy.json -resourceGroup RG2 -location westeurope`",
+    "options": [
+      "A. RG1에 생성, 위치는 northeurope",
+      "B. RG1에 생성, 위치는 westeurope",
+      "C. RG2에 생성, 위치는 northeurope",
+      "D. RG2에 생성, 위치는 westeurope"
+    ],
+    "answer": "D",
+    "explanation": "배포 명령에서 `-ResourceGroupName RG1`은 배포 작업의 대상 리소스 그룹을 지정하지만, 템플릿 내에서 `-resourceGroup RG2` 매개변수를 통해 리소스가 생성될 리소스 그룹을 `RG2`로 재정의했습니다. 마찬가지로 `-location westeurope` 매개변수를 통해 위치도 `westeurope`로 재정의했습니다. 따라서 storage1은 RG2에 `westeurope` 위치로 생성됩니다."
+  },
+  {
+    "topic": "App Service",
+    "question_no": 348,
+    "question": "주어진 자동 크기 조정 규칙에 따라, 30분 동안 App1이 사용 가능한 메모리의 80%를 사용하면 App1의 최대 인스턴스 수는 몇 개가 됩니까?",
+    "condition": "자동 크기 조정 규칙:\n- 현재 인스턴스: 2\n- 최소 인스턴스: 2\n- 최대 인스턴스: 5\n- 확장 규칙: 메모리 백분율 > 70%일 때 1 증가 (기간: 10분)",
+    "options": [
+      "A. 2",
+      "B. 3",
+      "C. 4",
+      "D. 5"
+    ],
+    "answer": "D",
+    "explanation": "메모리 사용량이 10분 동안 70%를 초과하면 인스턴스가 하나 증가합니다. 30분 동안 80%를 유지하면 10분마다 규칙이 트리거됩니다. 10분 후 3개, 20분 후 4개, 30분 후 5개가 됩니다. 최대 인스턴스 수가 5개이므로 더 이상 증가하지 않습니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 349,
+    "question": "어떤 Azure 서비스에서 Image1(Linux 기반)과 Image2(Windows 기반)를 모두 실행할 수 있습니까?",
+    "condition": "컨테이너 이미지:\n- Image1: Linux 기반\n- Image2: Windows 기반",
+    "options": [
+      "A. Azure Container Instances만",
+      "B. Azure Container Apps만",
+      "C. Azure App Service만",
+      "D. Azure Container Instances와 Azure App Service"
+    ],
+    "answer": "D",
+    "explanation": "Azure Container Instances와 Azure App Service는 모두 Linux 및 Windows 컨테이너를 지원합니다. Azure Container Apps는 현재 Linux 컨테이너만 지원합니다. 따라서 Image1과 Image2를 모두 실행할 수 있는 서비스는 Azure Container Instances와 Azure App Service입니다."
+  },
+  {
+    "topic": "App Service",
+    "question_no": 350,
+    "question": "Azure Key Vault(KV1)에 저장된 와일드카드 인증서를 Azure App Service 웹 앱(App1)에서 사용하도록 구성하려고 합니다. 가장 먼저 해야 할 일은 무엇입니까?",
+    "condition": null,
+    "options": [
+      "A. KV1에 대한 액세스 정책을 만들고 정책에 Microsoft Azure App Service 주체를 할당합니다.",
+      "B. App1에 관리 ID를 할당합니다.",
+      "C. KV1이 역할 기반 액세스 제어(RBAC) 권한 부여 시스템을 사용하도록 구성합니다.",
+      "D. KV1에 대한 액세스 정책을 만들고 해당 정책을 User1에 할당합니다."
+    ],
+    "answer": "A",
+    "explanation": "App Service가 Key Vault의 인증서에 접근하려면 권한이 필요합니다. 이를 부여하는 표준 방법은 Key Vault의 액세스 정책에 'Microsoft.Azure.WebSites'라는 서비스 주체(App Service를 나타냄)를 추가하고, 인증서를 가져올 수 있는 'Get' 권한을 부여하는 것입니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 351,
+    "question": "가상 머신(VM1)을 배포하는 ARM 템플릿을 만들고 있습니다. VM1 리소스의 `dependsOn` 섹션에 어떤 리소스를 추가해야 합니까?",
+    "condition": "배포할 리소스:\n- VNet1 (가상 네트워크)\n- NIC1 (네트워크 인터페이스)\n- IP1 (공용 IP 주소)\n- NSG1 (네트워크 보안 그룹)\n- VM1 (가상 머신)",
+    "options": [
+      "A. VNet1",
+      "B. NIC1",
+      "C. IP1",
+      "D. NSG1"
+    ],
+    "answer": "B",
+    "explanation": "`dependsOn` 속성은 Azure에 리소스 생성 순서를 알려줍니다. 가상 머신은 생성될 때 네트워크 인터페이스(NIC)가 필요하므로, VM 리소스 정의는 NIC 리소스가 먼저 생성되도록 `dependsOn` 섹션에 NIC의 리소스 ID를 포함해야 합니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 352,
+    "question": "주어진 ARM 템플릿을 배포하기 위해 Azure Cloud Shell에서 어떤 PowerShell cmdlet을 실행해야 합니까?",
+    "condition": "ARM 템플릿 스키마:\n`\"$schema\": \"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#\"`",
+    "options": [
+      "A. `New-AzSubscriptionDeployment`",
+      "B. `New-AzManagementGroupDeployment`",
+      "C. `New-AzResourceGroupDeployment`",
+      "D. `New-AzTenantDeployment`"
+    ],
+    "answer": "C",
+    "explanation": "템플릿의 스키마 URL(`deploymentTemplate.json`)과 리소스가 리소스 그룹 내에 정의된다는 일반적인 ARM 패턴은 이것이 리소스 그룹 수준 배포임을 나타냅니다. 리소스 그룹 수준에서 템플릿을 배포하는 데 사용되는 PowerShell cmdlet은 `New-AzResourceGroupDeployment`입니다."
+  },
+  {
+    "topic": "스토리지",
+    "question_no": 353,
+    "question": "Bicep 파일을 수정하여 storage1 스토리지 계정을 RG1 리소스 그룹에 자동으로 배포하려고 합니다. 어떤 속성을 수정해야 합니까?",
+    "condition": "Bicep 파일 (File1)",
+    "options": [
+      "A. `targetScope`",
+      "B. `scope`",
+      "C. `sku`",
+      "D. `location`"
+    ],
+    "answer": "A",
+    "explanation": "Bicep 파일에서 배포의 범위를 지정하려면 `targetScope` 속성을 사용합니다. 리소스 그룹에 직접 배포하는 것이 기본값이지만, 구독, 관리 그룹 또는 테넌트 수준에 배포하려면 `targetScope`을 각각 'subscription', 'managementGroup', 'tenant'로 명시적으로 설정해야 합니다. 이 경우 리소스 그룹 배포이므로 `targetScope = resourceGroup()`을 명시적으로 설정하거나 생략할 수 있습니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 354,
+    "question": "주어진 ARM 템플릿과 배포 명령을 실행한 후, storage1 스토리지 계정은 어떤 리소스 그룹에 생성되며, storage1의 위치는 어디입니까?",
+    "condition": "ARM 템플릿:\n- `resourceGroup` 매개변수 기본값: `[resourceGroup().name]`\n- `location` 매개변수 기본값: `[resourceGroup().location]`\n배포 명령:\n`New-AzDeployment -Location westus -TemplateFile deploy.json -resourceGroup RG2 -location northeurope`",
+    "options": [
+      "A. RG1에 생성, 위치는 westus",
+      "B. RG2에 생성, 위치는 northeurope",
+      "C. RG1에 생성, 위치는 northeurope",
+      "D. RG2에 생성, 위치는 westus"
+    ],
+    "answer": "B",
+    "explanation": "이 배포는 구독 수준(`New-AzDeployment`)에서 수행됩니다. `-Location westus`는 배포 메타데이터가 저장될 위치를 지정합니다. 템플릿 내에서 `-resourceGroup RG2`와 `-location northeurope` 매개변수를 통해 리소스가 생성될 리소스 그룹과 위치를 명시적으로 지정했으므로, storage1은 RG2에 `northeurope` 위치로 생성됩니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 355,
+    "question": "VMSS1 가상 머신 확장 집합에 대한 근접 배치 그룹을 구성하려고 합니다. 어떤 근접 배치 그룹을 사용할 수 있습니까?",
+    "condition": "리소스:\n- VMSS1: RG1, East US\n- Proximity1: RG1, East US\n- Proximity2: RG2, East US\n- Proximity3: RG1, West US",
+    "options": [
+      "A. Proximity2만",
+      "B. Proximity1, Proximity2, Proximity3",
+      "C. Proximity1만",
+      "D. Proximity1 및 Proximity3만"
+    ],
+    "answer": "C",
+    "explanation": "근접 배치 그룹에 리소스를 추가하려면 해당 리소스가 근접 배치 그룹과 동일한 위치(지역) 및 동일한 리소스 그룹에 있어야 합니다. VMSS1은 RG1과 East US에 있으므로, 동일한 RG1과 East US에 있는 Proximity1만 사용할 수 있습니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 356,
+    "question": "VNet1과 VNet2는 피어링되어 있고, VNet2와 VNet3도 피어링되어 있습니다. App1은 VM1에, App2는 VM3에 있습니다. App1은 App2에 연결할 수 있습니까? 그리고 VNet1을 VNet3과 피어링할 수 있습니까?",
+    "condition": "가상 네트워크:\n- VNet1: RG1, 10.0.0.0/16\n- VNet2: RG1, 10.1.0.0/16\n- VNet3: RG2, 10.2.0.0/16\n가상 머신:\n- VM1: VNet1\n- VM3: VNet3",
+    "options": [
+      "A. App1은 App2에 연결 가능, VNet1과 VNet3 피어링 가능",
+      "B. App1은 App2에 연결 가능, VNet1과 VNet3 피어링 불가능",
+      "C. App1은 App2에 연결 불가능, VNet1과 VNet3 피어링 가능",
+      "D. App1은 App2에 연결 불가능, VNet1과 VNet3 피어링 불가능"
+    ],
+    "answer": "C",
+    "explanation": "가상 네트워크 피어링은 전이적(transitive)이지 않습니다. 즉, VNet1이 VNet2와 피어링되고 VNet2가 VNet3과 피어링되어 있어도 VNet1과 VNet3은 자동으로 통신할 수 없습니다. 따라서 App1은 App2에 연결할 수 없습니다. VNet1과 VNet3은 주소 공간이 겹치지 않으므로 직접 피어링하는 것은 가능합니다."
+  },
+  {
+    "topic": "백업 및 복구",
+    "question_no": 357,
+    "question": "Vault1을 사용하여 어떤 가상 머신을 백업할 수 있습니까?",
+    "condition": "리소스:\n- Vault1 (Recovery Services 자격 증명 모음): West US\n- VM1: West US\n- VM2: East US\n- VM3: West US, 암호화됨\n- VMA: West US, 중지됨\n- VMB: East US, 중지됨\n- VMC: West US, 할당 취소됨",
+    "options": [
+      "A. VM1만",
+      "B. VM3 및 VMC만",
+      "C. VM1, VM2, VM3, VMA, VMB 및 VMC",
+      "D. VM1, VM3, VMA 및 VMC만",
+      "E. VM1 및 VM3만"
+    ],
+    "answer": "D",
+    "explanation": "Azure Backup을 사용하여 VM을 백업하려면 VM이 Recovery Services 자격 증명 모음과 동일한 지역에 있어야 합니다. 따라서 East US에 있는 VM2와 VMB는 백업할 수 없습니다. 실행 중, 중지됨, 할당 취소됨 상태의 VM은 모두 백업할 수 있으며, 암호화된 VM도 지원됩니다. 따라서 West US에 있는 VM1, VM3, VMA, VMC를 백업할 수 있습니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 358,
+    "question": "Azure 컨테이너 레지스트리(ContReg1)에서 관리자 사용자를 활성화했습니다. ContReg1에 로그인하는 데 사용할 수 있는 사용자 이름은 무엇입니까?",
+    "condition": null,
+    "options": [
+      "A. root",
+      "B. admin",
+      "C. administrator",
+      "D. ContReg1"
+    ],
+    "answer": "D",
+    "explanation": "Azure 컨테이너 레지스트리에서 관리자 계정을 활성화하면, 사용자 이름은 레지스트리 이름 자체(이 경우 ContReg1)가 됩니다. Azure Portal 또는 CLI를 통해 두 개의 암호를 생성하고 관리할 수 있습니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 359,
+    "question": "Azure 컨테이너 레지스트리(ContReg1)에 서명된 이미지만 푸시하고 풀할 수 있도록 하려면 무엇을 해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 고객 관리형 키를 사용하여 암호화를 활성화합니다.",
+      "B. 연결된 레지스트리를 만듭니다.",
+      "C. 토큰을 추가합니다.",
+      "D. 콘텐츠 신뢰를 활성화합니다."
+    ],
+    "answer": "D",
+    "explanation": "콘텐츠 신뢰(Content Trust)는 Docker의 기능으로, 이미지 게시자가 이미지에 서명할 수 있게 해줍니다. Azure 컨테이너 레지스트리에서 콘텐츠 신뢰를 활성화하면, 사용자는 서명된 이미지만 푸시하고 풀할 수 있도록 강제하여 이미지의 무결성과 출처를 보장할 수 있습니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 360,
+    "question": "어떤 컨테이너 레지스트리가 ACR 작업과 프라이빗 엔드포인트를 모두 지원합니까?",
+    "condition": "컨테이너 레지스트리:\n- ContReg1: Premium SKU\n- ContReg2: Standard SKU\n- ContReg3: Basic SKU",
+    "options": [
+      "A. ContReg1만",
+      "B. ContReg2만",
+      "C. ContReg1과 ContReg2만",
+      "D. ContReg1, ContReg2, ContReg3"
+    ],
+    "answer": "C",
+    "explanation": "ACR 작업(Tasks)은 모든 SKU(Basic, Standard, Premium)에서 지원됩니다. 그러나 프라이빗 엔드포인트(Private Endpoint)는 네트워크 격리를 제공하는 고급 기능으로, Standard 및 Premium SKU에서만 지원됩니다. 따라서 두 기능을 모두 지원하는 것은 ContReg1과 ContReg2입니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 361,
+    "question": "ARM 템플릿을 사용하여 Windows Server 2022를 실행하는 여러 Azure 가상 머신을 가상 머신 확장 집합에 배포할 계획입니다. 배포 후 모든 가상 머신에서 NGINX를 사용할 수 있도록 하려면 무엇을 사용해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. Azure 사용자 지정 스크립트 확장",
+      "B. Azure App Service의 배포 센터",
+      "C. Microsoft Entra 애플리케이션 프록시",
+      "D. `Publish-AzVMDscConfiguration` cmdlet"
+    ],
+    "answer": "A",
+    "explanation": "Azure 사용자 지정 스크립트 확장은 VM 프로비저닝 후 스크립트를 실행하는 유연하고 간단한 방법입니다. NGINX를 설치하는 PowerShell 스크립트를 작성하고, ARM 템플릿 내에서 이 확장을 참조하여 확장 집합의 모든 인스턴스에 NGINX를 자동으로 설치할 수 있습니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 362,
+    "question": "컨테이너 그룹(Group1)에서 container2가 container1에 부정적인 영향을 주지 않고 CPU 리소스를 사용하도록 하려면 어떻게 해야 합니까?",
+    "condition": "컨테이너 인스턴스:\n- container1: 2 CPU 요청, 4 CPU 제한\n- container2: 2 CPU 요청, 4 CPU 제한",
+    "options": [
+      "A. container1의 리소스 제한을 3 CPU로 늘립니다.",
+      "B. container2의 리소스 제한을 6 CPU로 늘립니다.",
+      "C. 두 컨테이너의 리소스 제한을 모두 제거합니다.",
+      "D. container2의 리소스 제한을 2 CPU로 줄입니다."
+    ],
+    "answer": "D",
+    "explanation": "컨테이너 그룹의 총 리소스는 그룹 내 모든 컨테이너의 요청(request) 합계입니다. 리소스 제한(limit)은 컨테이너가 사용할 수 있는 최대 리소스를 정의합니다. container2가 container1에 영향을 주지 않으려면 container2의 CPU 제한을 요청과 동일하게 설정하여(2 CPU) CPU 사용량을 예측 가능하게 만들고 다른 컨테이너의 리소스를 과도하게 사용하는 것을 방지할 수 있습니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 363,
+    "question": "컨테이너를 배포할 계획이며, 배포된 컨테이너가 자동으로 확장될 수 있어야 합니다. 어떤 Azure 서비스를 추천해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. Azure Container Apps만",
+      "B. Azure Container Instances만",
+      "C. Azure Container Apps 또는 Azure App Service만",
+      "D. Azure Container Instances 또는 Azure App Service만",
+      "E. Azure Container Apps, Azure Container Instances 또는 Azure App Service"
+    ],
+    "answer": "C",
+    "explanation": "Azure Container Apps와 Azure App Service는 모두 트래픽이나 CPU/메모리 사용량과 같은 메트릭에 따라 컨테이너 인스턴스를 자동으로 확장(스케일 아웃)하는 기능을 기본적으로 제공합니다. Azure Container Instances는 단일 컨테이너 또는 간단한 다중 컨테이너 그룹을 신속하게 실행하는 데 중점을 두며, 자동 확장 기능은 제공하지 않습니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 364,
+    "question": "새 Azure 컨테이너 레지스트리를 프로비저닝하고 로컬에 빌드한 컨테이너 이미지(image1)를 해당 레지스트리에 추가하려고 합니다. 각 요구 사항에 대해 어떤 명령을 실행해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 프로비저닝: `az acr create`, 이미지 추가: `az acr build`",
+      "B. 프로비저닝: `az acr create`, 이미지 추가: `docker push`",
+      "C. 프로비저닝: `docker create`, 이미지 추가: `docker push`",
+      "D. 프로비저닝: `az acr build`, 이미지 추가: `az acr create`"
+    ],
+    "answer": "B",
+    "explanation": "새 Azure 컨테이너 레지스트리를 만드는 Azure CLI 명령은 `az acr create`입니다. 로컬 Docker 환경에서 이미지를 빌드한 후에는 `docker login`으로 레지스트리에 인증하고, `docker tag`로 이미지에 레지스트리 주소를 태그한 다음, `docker push` 명령을 사용하여 이미지를 레지스트리에 업로드합니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 365,
+    "question": "Azure 컨테이너 레지스트리(Registry1)의 이미지(image1)를 사용하여 컨테이너 인스턴스를 배포할 수 없습니다. Registry1에 대해 'ACR-Tasks-Network'에 AcrPull 역할을 할당하는 것이 이 문제를 해결합니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "'ACR-Tasks-Network'는 ACR 작업(Tasks)이 가상 네트워크와 상호 작용할 때 사용되는 서비스 주체입니다. 컨테이너 인스턴스가 이미지를 풀하는 것과는 직접적인 관련이 없습니다. 컨테이너 인스턴스가 이미지를 풀하게 하려면 컨테이너 인스턴스의 관리 ID 또는 서비스 주체에 AcrPull 역할을 할당하거나, 레지스트리의 관리자 자격 증명을 사용해야 합니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 366,
+    "question": "Azure 컨테이너 레지스트리(Registry1)의 이미지(image1)를 사용하여 컨테이너 인스턴스를 배포할 수 없습니다. Registry1에서 전용 데이터 엔드포인트 사용을 활성화하는 것이 이 문제를 해결합니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "전용 데이터 엔드포인트는 데이터 전송을 특정 엔드포인트로 제한하여 방화벽 규칙을 단순화하는 데 사용됩니다. 이는 인증 문제나 이미지 풀 실패의 직접적인 해결책이 아닙니다. 문제의 근본 원인은 컨테이너 인스턴스가 레지스트리에 접근할 수 있는 적절한 인증이나 권한이 없기 때문일 가능성이 높습니다."
+  },
+  {
+    "topic": "컨테이너",
+    "question_no": 367,
+    "question": "Azure 컨테이너 레지스트리(Registry1)의 이미지(image1)를 사용하여 컨테이너 인스턴스를 배포할 수 없습니다. Registry1에 대한 프라이빗 엔드포인트 연결을 만드는 것이 이 문제를 해결합니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "프라이빗 엔드포인트는 가상 네트워크 내에서 레지스트리에 비공개로 안전하게 접근하는 방법을 제공하지만, 그 자체로 인증 문제를 해결하지는 않습니다. 프라이빗 엔드포인트를 사용하더라도 컨테이너 인스턴스는 여전히 이미지를 풀할 수 있는 적절한 권한(예: AcrPull 역할)이 필요합니다. 이 솔루션은 근본적인 권한 문제를 해결하지 않습니다."
+  },
+  {
+    "topic": "App Service",
+    "question_no": 368,
+    "question": "웹 앱의 CPU 사용량이 80%를 초과할 때 App Service 계획(Plan1)이 자동으로 확장되도록 하려고 합니다. Plan1에 대해 어떤 옵션을 선택해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 확장(Scale out) 방법 설정에서 '자동'",
+      "B. 확장(Scale out) 방법 설정에서 '규칙 기반'",
+      "C. 확장(Scale up) 설정에서 '프리미엄 P1'",
+      "D. 확장(Scale up) 설정에서 '표준 S1'",
+      "E. 확장(Scale out) 방법 설정에서 '수동'"
+    ],
+    "answer": "B",
+    "explanation": "자동 확장(Autoscaling)은 인스턴스 수를 늘리는 '확장(Scale out)' 작업입니다. 특정 조건(예: CPU 사용량 > 80%)에 따라 자동으로 확장하려면 '규칙 기반' 자동 크기 조정을 선택하고 해당 조건을 충족하는 확장 규칙을 만들어야 합니다. '확장(Scale up)'은 인스턴스의 크기(CPU/메모리)를 늘리는 것을 의미합니다."
+  },
+  {
+    "topic": "모니터링",
+    "question_no": 369,
+    "question": "WebApp1에 TLS를 사용하도록 기술 요구 사항을 충족해야 합니다. Vault1에서 어떤 인증서를 사용할 수 있습니까?",
+    "condition": "인증서 정보:\n- Cert1: adatum.com, PFX 형식, 암호로 보호됨\n- Cert2: adatum.com, CER 형식\n- Cert3: *.adatum.com, PFX 형식, 암호로 보호됨\n- Cert4: *.adatum.com, CER 형식",
+    "options": [
+      "A. Cert1만",
+      "B. Cert1 또는 Cert2만",
+      "C. Cert1 또는 Cert3만",
+      "D. Cert3 또는 Cert4만",
+      "E. Cert1, Cert2, Cert3 또는 Cert4"
+    ],
+    "answer": "C",
+    "explanation": "Azure App Service에서 TLS/SSL 바인딩을 위해 인증서를 사용하려면, 개인 키가 포함된 PFX 형식의 파일이어야 합니다. CER 형식은 공개 키만 포함하므로 사용할 수 없습니다. 따라서 암호로 보호된 PFX 파일인 Cert1과 Cert3만 사용할 수 있습니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 370,
+    "question": "VM1이 유지 관리의 영향을 받는다는 알림을 받았습니다. 즉시 VM1을 다른 호스트로 이동하려고 합니다. 리소스 그룹 블레이드에서 VM1을 다른 구독으로 이동하는 것이 목표를 달성합니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "VM을 다른 구독으로 이동하는 것은 관리 및 청구 목적의 논리적인 이동일 뿐, VM이 실행 중인 물리적 호스트를 변경하지 않습니다. 계획된 유지 관리로 인해 VM을 다른 호스트로 강제 이동하려면 VM 블레이드에서 '재배포 및 재적용' 옵션을 사용해야 합니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 371,
+    "question": "VM1이 유지 관리의 영향을 받는다는 알림을 받았습니다. 즉시 VM1을 다른 호스트로 이동하려고 합니다. VM1의 '재배포 + 재적용' 블레이드에서 '재배포'를 선택하는 것이 목표를 달성합니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "A",
+    "explanation": "VM 재배포(Redeploy)는 VM을 Azure 인프라 내의 새 노드로 이동하는 작업입니다. 이는 계획된 유지 관리 이벤트에서 벗어나거나 VM 연결 문제 등을 해결하는 데 사용될 수 있습니다. 이 작업은 VM을 다른 물리적 호스트로 이동시키므로 목표를 달성합니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 372,
+    "question": "VM1이 유지 관리의 영향을 받는다는 알림을 받았습니다. 즉시 VM1을 다른 호스트로 이동하려고 합니다. VM1의 업데이트 블레이드에서 '일회성 업데이트'를 선택하는 것이 목표를 달성합니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "'일회성 업데이트'는 Azure Update Manager를 사용하여 VM에 운영 체제 업데이트를 예약하고 적용하는 기능입니다. 이 작업은 VM이 실행 중인 물리적 호스트를 변경하지 않으므로, 유지 관리 이벤트에서 VM을 이동하는 목표를 달성하지 못합니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 373,
+    "question": "키 암호화 키(KEK)를 사용하는 기술 요구 사항을 충족해야 합니다. 어떤 PowerShell cmdlet과 어떤 키를 사용해야 합니까?",
+    "condition": "키 정보:\n- Key1: RSA, 2048비트\n- Key2: RSA-HSM, 2048비트",
+    "options": [
+      "A. `Set-AzVMDiskEncryptionExtension` 및 Key2",
+      "B. `Set-AzDiskEncryptionKey` 및 Key2",
+      "C. `Set-AzDiskEncryptionKey` 및 Key1",
+      "D. `Set-AzVMDiskEncryptionExtension` 및 Key1"
+    ],
+    "answer": "A",
+    "explanation": "Azure Disk Encryption을 활성화하고 KEK를 사용하도록 구성하는 PowerShell cmdlet은 `Set-AzVMDiskEncryptionExtension`입니다. KEK는 보안 강화를 위해 하드웨어 보안 모듈(HSM)에서 지원하는 키를 사용하는 것이 권장되므로 RSA-HSM 유형인 Key2를 사용해야 합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 374,
+    "question": "다계층 애플리케이션의 네트워킹 솔루션을 추천해야 합니다. 웹 서버와 비즈니스 논리 계층 간의 트래픽을 균등하게 분산하고, 웹 서버를 SQL 삽입 공격으로부터 보호하려면 어떤 Azure 리소스를 사용해야 합니까?",
+    "condition": "애플리케이션 계층:\n- 웹 서버\n- 비즈니스 논리\n- 데이터",
+    "options": [
+      "A. 트래픽 분산: 내부 부하 분산 장치, SQL 삽입 방어: Azure Firewall",
+      "B. 트래픽 분산: 공용 부하 분산 장치, SQL 삽입 방어: 네트워크 보안 그룹(NSG)",
+      "C. 트래픽 분산: 내부 부하 분산 장치, SQL 삽입 방어: Azure Application Gateway WAF_v2",
+      "D. 트래픽 분산: 공용 부하 분산 장치, SQL 삽입 방어: Azure Application Gateway WAF_v2"
+    ],
+    "answer": "C",
+    "explanation": "내부 계층(웹 서버와 비즈니스 논리) 간의 트래픽은 외부와 격리되어야 하므로 '내부 부하 분산 장치'를 사용해야 합니다. SQL 삽입과 같은 웹 애플리케이션 공격을 방어하기 위해서는 'Azure Application Gateway'의 웹 애플리케이션 방화벽(WAF) 기능이 가장 적합합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 375,
+    "question": "마이애미, 로스앤젤레스, 뉴욕에 있는 3개의 데이터 센터를 Azure에 연결하고 데이터 센터 간의 네트워크 대기 시간을 최소화하려고 합니다. 무엇을 만들어야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 3개의 Azure Application Gateway와 1개의 온-프레미스 데이터 게이트웨이",
+      "B. 3개의 가상 허브와 1개의 가상 WAN",
+      "C. 3개의 가상 WAN과 1개의 가상 허브",
+      "D. 3개의 온-프레미스 데이터 게이트웨이와 1개의 Azure Application Gateway"
+    ],
+    "answer": "B",
+    "explanation": "Azure Virtual WAN은 여러 사이트(데이터 센터, 지사 등)를 Azure 및 서로에게 연결하는 네트워킹 서비스를 중앙에서 관리합니다. 각 지역(또는 데이터 센터)에 '가상 허브'를 만들고 이들을 단일 '가상 WAN'에 연결하여 Microsoft의 글로벌 네트워크를 통해 사이트 간 통신을 최적화하고 대기 시간을 줄일 수 있습니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 376,
+    "question": "가상 네트워크 서브넷에 5개의 VM을 배포할 계획입니다. 각 VM에는 공용 및 개인 IP 주소가 필요하며, 모두 동일한 인바운드 및 아웃바운드 보안 규칙이 적용되어야 합니다. 필요한 최소 네트워크 인터페이스와 네트워크 보안 그룹의 수는 각각 몇 개입니까?",
+    "condition": null,
+    "options": [
+      "A. NIC 5개, NSG 1개",
+      "B. NIC 10개, NSG 1개",
+      "C. NIC 5개, NSG 5개",
+      "D. NIC 10개, NSG 5개"
+    ],
+    "answer": "A",
+    "explanation": "각 가상 머신에는 최소 하나의 네트워크 인터페이스(NIC)가 필요하므로 5개의 VM에는 5개의 NIC가 필요합니다. 동일한 보안 규칙을 여러 리소스에 적용하려면 단일 네트워크 보안 그룹(NSG)을 만들고, 이를 개별 NIC에 연결하거나 모든 VM이 속한 서브넷에 연결하면 됩니다. 따라서 최소 1개의 NSG가 필요합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 377,
+    "question": "내부 부하 분산 장치(LB1)에 대해 인터넷에서 VM1과 VM2로의 원격 데스크톱(포트 3389) 연결을 허용하는 인바운드 NAT 규칙을 만들려고 합니다. 새 규칙을 만들기 전에 LB1에서 무엇을 만들어야 합니까?",
+    "condition": "리소스:\n- VM1, VM2\n- LB1 (내부 부하 분산 장치)\n- 백엔드 풀: Pool1 (VM1, VM2 포함)",
+    "options": [
+      "A. 프런트엔드 IP 주소",
+      "B. 부하 분산 규칙",
+      "C. 상태 프로브",
+      "D. 백엔드 풀"
+    ],
+    "answer": "A",
+    "explanation": "인바운드 NAT 규칙은 부하 분산 장치의 프런트엔드 IP 주소와 특정 포트를 백엔드 풀의 특정 VM과 포트로 매핑합니다. 따라서 NAT 규칙을 정의하려면 먼저 트래픽을 수신할 프런트엔드 IP 주소가 부하 분산 장치에 구성되어 있어야 합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 378,
+    "question": "adatum.com이라는 프라이빗 Azure DNS 영역을 만들고 VNET1에 대한 자동 등록을 활성화했습니다. 각 가상 머신에 대해 adatum.com 영역에 어떤 A 레코드가 추가됩니까?",
+    "condition": "가상 머신:\n- VM1: VNET1, NIC1\n- VM2: VNET1, NIC2\n- VM3: VNET2, NIC3",
+    "options": [
+      "A. VM1, VM2, VM3에 대한 레코드",
+      "B. VM1과 VM2에 대한 레코드",
+      "C. VM3에 대한 레코드",
+      "D. 레코드 없음"
+    ],
+    "answer": "B",
+    "explanation": "프라이빗 DNS 영역에 가상 네트워크 링크를 만들고 자동 등록을 활성화하면, 해당 가상 네트워크에 연결된 가상 머신들의 개인 IP 주소에 대한 A 레코드가 DNS 영역에 자동으로 생성됩니다. VNET1만 링크되었으므로 VM1과 VM2에 대한 레코드만 추가됩니다."
+  },
+  {
+    "topic": "모니터링",
+    "question_no": 379,
+    "question": "내부 부하 분산 장치(ILB1)에 연결하는 IP 주소에 대한 데이터를 수집하고, 수집된 데이터에 대해 대화형 쿼리를 실행하려고 합니다. 데이터를 저장할 리소스와 흐름 로깅을 활성화할 리소스는 무엇입니까?",
+    "condition": null,
+    "options": [
+      "A. 데이터 저장소: Azure Log Analytics 작업 영역, 로깅 활성화: NSG1",
+      "B. 데이터 저장소: Azure Storage 계정, 로깅 활성화: ILB1",
+      "C. 데이터 저장소: Azure Log Analytics 작업 영역, 로깅 활성화: ILB1",
+      "D. 데이터 저장소: Azure Storage 계정, 로깅 활성화: NSG1"
+    ],
+    "answer": "A",
+    "explanation": "네트워크 트래픽 흐름에 대한 데이터를 수집하려면 서브넷 또는 NIC에 연결된 네트워크 보안 그룹(NSG)에서 NSG 흐름 로그를 활성화해야 합니다. 대화형 쿼리를 실행하려면 흐름 로그 데이터를 Azure Log Analytics 작업 영역으로 보내야 합니다. 이를 통해 Kusto 쿼리 언어(KQL)를 사용하여 데이터를 분석할 수 있습니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 380,
+    "question": "VNet1에서 피어링 연결을 설정할 수 있는 가상 네트워크는 무엇입니까?",
+    "condition": "가상 네트워크:\n- VNet1: 10.0.0.0/16, West US\n- VNet2: 10.1.0.0/16, West US\n- VNet3: 10.2.0.0/16, East US\n- VNet4: 10.0.0.0/16, East US",
+    "options": [
+      "A. VNet2 및 VNet3만",
+      "B. VNet2만",
+      "C. VNet3 및 VNet4만",
+      "D. VNet2, VNet3 및 VNet4"
+    ],
+    "answer": "A",
+    "explanation": "가상 네트워크 피어링을 설정하려면 피어링하려는 가상 네트워크들의 주소 공간이 겹치지 않아야 합니다. VNet1과 VNet4는 동일한 주소 공간(10.0.0.0/16)을 가지므로 피어링할 수 없습니다. VNet2와 VNet3은 VNet1과 주소 공간이 겹치지 않으므로 피어링이 가능합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 381,
+    "question": "Perimeter 서브넷과 Production 서브넷 간의 트래픽을 검사하는 두 개의 네트워크 가상 어플라이언스(NVA)에 대한 부하 분산 장치를 구현해야 합니다. NVA는 활성-활성 구성으로 실행되어야 하며, 부하 분산 장치는 Production 서브넷의 서로 다른 IP 주소를 가진 두 서비스를 부하 분산해야 합니다. 어떤 두 가지 조치를 취해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 표준 부하 분산 장치를 배포합니다.",
+      "B. 기본 부하 분산 장치를 배포합니다.",
+      "C. HA 포트와 부동 IP가 활성화된 두 개의 부하 분산 규칙을 추가합니다.",
+      "D. 프런트엔드 IP 구성, 백엔드 풀 및 상태 프로브를 추가합니다."
+    ],
+    "answer": "A",
+    "explanation": "NVA의 고가용성(HA) 시나리오에는 표준 SKU의 내부 부하 분산 장치가 필요합니다. 표준 SKU는 HA 포트와 같은 고급 기능을 제공합니다. HA 포트 규칙은 모든 TCP 및 UDP 흐름을 모든 포트에서 동시에 부하 분산하여 NVA의 활성-활성 구성과 자동 장애 조치를 쉽게 구현할 수 있게 해줍니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 382,
+    "question": "온-프레미스 네트워크와 VNet1 간에 사이트 간 VPN이 있고, Client1에서 VNet1로 지점-사이트 간 VPN이 있습니다. VNet1과 VNet2를 피어링한 후, Client1이 VNet2에 연결할 수 있도록 하려면 어떻게 해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. Client1에서 VPN 클라이언트 구성 패키지를 다운로드하여 다시 설치합니다.",
+      "B. VNet1에서 '게이트웨이 전송 허용'을 선택합니다.",
+      "C. VNet2에서 '게이트웨이 전송 허용'을 선택합니다.",
+      "D. VPNGW1에서 BGP를 활성화합니다."
+    ],
+    "answer": "A",
+    "explanation": "지점-사이트 간 VPN 클라이언트는 연결 시 Azure에서 라우팅 테이블을 다운로드합니다. VNet 피어링을 추가하여 네트워크 토폴로지를 변경한 후에는 클라이언트가 새 라우팅 정보를 얻을 수 있도록 VPN 클라이언트 구성 패키지를 다시 다운로드하고 설치해야 합니다. 이렇게 하면 VNet2의 주소 공간에 대한 경로가 클라이언트에 추가됩니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 383,
+    "question": "주어진 DNS 구성에 따라, VM1은 `webapp1.adatum.com`을 확인할 수 있습니까? 그리고 VM2는 `vm1.contoso.com`을 확인할 수 있습니까?",
+    "condition": "구성:\n- 공용 DNS 영역: adatum.com\n- 프라이빗 DNS 영역: contoso.com\n- VNET1: contoso.com에 가상 네트워크 링크로 연결됨 (자동 등록 활성화)\n- VM1: VNET1에 연결됨\n- VM2: VNET2에 연결됨",
+    "options": [
+      "A. `webapp1.adatum.com` 확인 가능, `vm1.contoso.com` 확인 가능",
+      "B. `webapp1.adatum.com` 확인 가능, `vm1.contoso.com` 확인 불가능",
+      "C. `webapp1.adatum.com` 확인 불가능, `vm1.contoso.com` 확인 가능",
+      "D. `webapp1.adatum.com` 확인 불가능, `vm1.contoso.com` 확인 불가능"
+    ],
+    "answer": "B",
+    "explanation": "adatum.com은 공용 DNS 영역이므로 인터넷에 연결된 모든 클라이언트(VM1 포함)는 해당 레코드를 확인할 수 있습니다. contoso.com은 프라이빗 DNS 영역이며 VNET1에만 링크되어 있습니다. 따라서 VNET1에 있는 VM만 해당 영역의 레코드를 확인할 수 있습니다. VM2는 VNET2에 있으므로 `vm1.contoso.com`을 확인할 수 없습니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 384,
+    "question": "NSG1 네트워크 보안 그룹을 어떤 서브넷에 적용할 수 있습니까?",
+    "condition": "리소스:\n- NSG1: West US\n- VNet1: West US\n- VNet2: East US\n- VNet3: West US",
+    "options": [
+      "A. VNet1의 서브넷만",
+      "B. VNet2 및 VNet3의 서브넷만",
+      "C. VNet2의 서브넷만",
+      "D. VNet3의 서브넷만",
+      "E. VNet1 및 VNet3의 서브넷만"
+    ],
+    "answer": "E",
+    "explanation": "네트워크 보안 그룹(NSG)은 가상 네트워크와 동일한 Azure 지역(위치)에 있는 서브넷이나 네트워크 인터페이스에만 적용할 수 있습니다. NSG1은 West US에 있으므로, 동일한 West US 지역에 있는 VNet1과 VNet3의 서브넷에 적용할 수 있습니다. East US에 있는 VNet2에는 적용할 수 없습니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 385,
+    "question": "VNet1에 10.33.0.0/16 주소 공간을 추가하고 VNet1과 VNet2의 호스트가 통신할 수 있도록 하려고 합니다. 어떤 두 가지 작업을 순서대로 수행해야 합니까?",
+    "condition": "가상 네트워크:\n- VNet1: 10.32.0.0/16\n- VNet2: 10.32.0.0/22",
+    "options": [
+      "1. VNet2의 주소 공간을 수정합니다.",
+      "2. VNet1의 주소 공간을 수정합니다.",
+      "3. VNet1과 VNet2 간의 피어링을 삭제합니다.",
+      "4. VNet1과 VNet2 간의 피어링을 생성합니다.",
+      "5. VNet1과 VNet2 간의 피어링을 동기화합니다."
+    ],
+    "answer": "3, 1",
+    "explanation": "기존에 피어링된 가상 네트워크의 주소 공간을 수정하려면 먼저 피어링 연결을 삭제해야 합니다. VNet1에 10.33.0.0/16을 추가하는 것은 문제가 없지만, 현재 VNet1(10.32.0.0/16)과 VNet2(10.32.0.0/22)의 주소 공간이 겹칩니다. 피어링을 다시 설정하려면 주소 공간이 겹치지 않아야 하므로, VNet2의 주소 공간을 먼저 수정해야 합니다. 따라서 순서는 '피어링 삭제', 'VNet2 주소 공간 수정', 'VNet1 주소 공간 수정', '피어링 재생성'이 됩니다. 주어진 옵션 중 가장 적합한 순서는 피어링 삭제 후 주소 공간 수정입니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 386,
+    "question": "Disk1을 RG2로 이동할 수 있습니까? 그리고 NIC1을 IP2에 연결할 수 있습니까?",
+    "condition": "리소스:\n- RG1 (West US): VM1, NIC1, Disk1, VNET1\n- RG2 (East US): IP2 (공용 IP)",
+    "options": [
+      "A. Disk1 이동 가능, NIC1 연결 가능",
+      "B. Disk1 이동 가능, NIC1 연결 불가능",
+      "C. Disk1 이동 불가능, NIC1 연결 가능",
+      "D. Disk1 이동 불가능, NIC1 연결 불가능"
+    ],
+    "answer": "B",
+    "explanation": "관리 디스크(Disk1)는 다른 리소스 그룹으로 이동할 수 있지만, 다른 지역으로는 이동할 수 없습니다. RG1과 RG2는 다른 지역에 있으므로 Disk1을 RG2로 이동할 수 없습니다. 네트워크 인터페이스(NIC1)와 공용 IP 주소(IP2)를 연결하려면 두 리소스가 동일한 지역에 있어야 합니다. NIC1은 West US에, IP2는 East US에 있으므로 서로 연결할 수 없습니다. *수정: 디스크는 다른 리소스 그룹으로 이동 가능합니다. NIC와 IP는 같은 지역이어야 연결 가능합니다. 따라서 Disk1은 RG2로 이동 가능, NIC1은 IP2에 연결 불가능합니다.*"
+  },
+  {
+    "topic": "App Service",
+    "question_no": 387,
+    "question": "Azure 웹 앱(webapp1)이 가상 네트워크(VNET1) 내의 VM1에서 호스팅되는 MySQL 데이터베이스에 접근할 수 있도록 하려면 어떻게 해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 내부 부하 분산 장치를 배포합니다.",
+      "B. VNET1을 다른 가상 네트워크와 피어링합니다.",
+      "C. webapp1을 VNET1에 연결합니다.",
+      "D. Azure Application Gateway를 배포합니다."
+    ],
+    "answer": "C",
+    "explanation": "Azure App Service의 VNet 통합 기능을 사용하면 웹 앱이 가상 네트워크 내의 리소스에 비공개로 접근할 수 있습니다. webapp1에 대해 VNet 통합을 구성하고 VNET1의 서브넷에 연결하면, webapp1은 VNET1 내의 VM1에 있는 MySQL 데이터베이스에 직접 연결할 수 있습니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 388,
+    "question": "VM1에 대해 Desired State Configuration(DSC)을 활성화하려고 합니다. 가장 먼저 무엇을 해야 합니까?",
+    "condition": "VM1 상태: 중지됨(할당 취소됨)",
+    "options": [
+      "A. VM1에 연결합니다.",
+      "B. VM1을 시작합니다.",
+      "C. VM1의 스냅샷을 만듭니다.",
+      "D. VM1에 대한 DNS 이름을 구성합니다."
+    ],
+    "answer": "B",
+    "explanation": "가상 머신에 확장(DSC 확장 포함)을 설치하거나 구성하려면 해당 VM이 실행 중 상태여야 합니다. 현재 VM1은 '중지됨(할당 취소됨)' 상태이므로, DSC를 활성화하기 전에 먼저 VM1을 시작해야 합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 389,
+    "question": "5개의 웹 서버 VM에 대한 부하 분산 장치(LB1)가 있습니다. 방문자가 각 요청에 대해 동일한 웹 서버로부터 서비스를 받도록 하려면 무엇을 구성해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 부동 IP(직접 서버 반환)를 비활성화합니다.",
+      "B. 세션 지속성을 '없음'으로 설정합니다.",
+      "C. 부동 IP(직접 서버 반환)를 활성화합니다.",
+      "D. 세션 지속성을 '클라이언트 IP'로 설정합니다."
+    ],
+    "answer": "D",
+    "explanation": "세션 지속성(Session Persistence), 또는 소스 IP 선호도(Source IP Affinity)는 동일한 클라이언트의 요청을 동일한 백엔드 서버로 보내도록 보장하는 기능입니다. 부하 분산 규칙에서 세션 지속성을 '클라이언트 IP'로 설정하면, 부하 분산 장치는 소스 IP 주소를 사용하여 트래픽을 분산시켜 특정 클라이언트가 세션 동안 동일한 서버와 통신하도록 합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 390,
+    "question": "인터넷에서 VM1으로의 원격 데스크톱 연결을 설정하려고 합니다. NSG-Subnet1에 TCP 포트 3389를 허용하는 인바운드 규칙을 추가하고, VM1의 NIC에서 NSG-VM1을 제거하는 방법이 목표를 달성합니까?",
+    "condition": "구성:\n- NSG-VM1 (NIC에 연결됨): UDP 3389 허용 규칙 있음\n- NSG-Subnet1 (서브넷에 연결됨): 기본 규칙만 있음",
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "A",
+    "explanation": "원격 데스크톱은 TCP 포트 3389를 사용합니다. 제안된 해결책은 서브넷 수준(NSG-Subnet1)에서 TCP 3389를 허용하고, NIC 수준의 방해되는 규칙(NSG-VM1의 UDP 규칙)을 제거합니다. 서브넷에 적용된 규칙만으로도 VM1에 대한 RDP 연결이 가능해지므로 목표를 달성합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 391,
+    "question": "인터넷에서 VM1으로의 원격 데스크톱 연결을 설정하려고 합니다. NSG-Subnet1에 VirtualNetwork를 대상으로 UDP 포트 3389를 허용하는 인바운드 규칙을 추가하는 방법이 목표를 달성합니까?",
+    "condition": "구성:\n- NSG-VM1 (NIC에 연결됨): UDP 3389 허용 규칙 있음\n- NSG-Subnet1 (서브넷에 연결됨): 기본 규칙만 있음",
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "원격 데스크톱 프로토콜(RDP)은 TCP 포트 3389를 사용합니다. 제안된 해결책은 UDP 포트 3389를 허용하므로 RDP 트래픽을 허용하지 않습니다. 또한 소스가 '인터넷'이어야 하는데 'VirtualNetwork'로 잘못 설정되어 있습니다. 따라서 이 방법은 목표를 달성하지 못합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 392,
+    "question": "인터넷에서 VM1으로의 원격 데스크톱 연결을 설정하려고 합니다. NSG-Subnet1과 NSG-VM1 모두에 인터넷에서 VirtualNetwork를 대상으로 TCP 포트 3389를 허용하는 인바운드 규칙을 추가하는 방법이 목표를 달성합니까?",
+    "condition": "구성:\n- NSG-VM1 (NIC에 연결됨): UDP 3389 허용 규칙 있음\n- NSG-Subnet1 (서브넷에 연결됨): 기본 규칙만 있음",
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "A",
+    "explanation": "트래픽이 VM에 도달하려면 서브넷 수준과 NIC 수준의 NSG 규칙을 모두 통과해야 합니다. 제안된 해결책은 두 NSG 모두에 올바른 프로토콜(TCP)과 포트(3389)를 허용하는 규칙을 추가합니다. 이 새 TCP 규칙은 기존 UDP 규칙과 충돌하지 않으며, 우선순위에 따라 RDP 트래픽을 허용하게 되므로 목표를 달성합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 393,
+    "question": "VNet1에 10.1.0.0/16 주소 공간을 추가하고 10.1.1.0/24 주소 범위를 가진 Subnet2를 추가하려고 합니다. 어떤 작업을 먼저 수행해야 합니까?",
+    "condition": "VNet1 구성:\n- 주소 공간: 10.0.0.0/16\n- 서브넷(Subnet1): 10.0.0.0/24",
+    "options": [
+      "A. 주소 공간 추가",
+      "B. 서브넷 추가",
+      "C. 피어링 생성",
+      "D. 게이트웨이 서브넷 추가"
+    ],
+    "answer": "A",
+    "explanation": "새 서브넷을 추가하려면 해당 서브넷의 주소 범위가 가상 네트워크의 기존 주소 공간 내에 포함되어야 합니다. 현재 VNet1의 주소 공간은 10.0.0.0/16뿐이므로 10.1.1.0/24 범위를 가진 Subnet2를 추가할 수 없습니다. 따라서 먼저 VNet1의 주소 공간에 10.1.0.0/16을 추가해야 합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 394,
+    "question": "주어진 요구 사항을 충족하기 위해 만들어야 하는 네트워크 보안 그룹(NSG)의 최소 개수는 몇 개입니까?",
+    "condition": "요구 사항:\n- 인터넷에서 VM3, VM4, VM5, VM6으로 웹 요청 허용.\n- VM1과 VM2 간의 모든 연결 허용.\n- VM1에 대한 원격 데스크톱 연결 허용.\n- VNET1으로의 다른 모든 트래픽 차단.",
+    "options": [
+      "A. 1",
+      "B. 3",
+      "C. 4",
+      "D. 12"
+    ],
+    "answer": "B",
+    "explanation": "서로 다른 보안 요구 사항을 가진 VM 그룹을 격리하기 위해 여러 NSG를 사용하는 것이 좋습니다. 관리 서브넷(VM1, VM2)에 대한 NSG 하나, 웹 서브넷(VM3, VM4)에 대한 NSG 하나, 데이터베이스 서브넷(VM5, VM6)에 대한 NSG 하나, 이렇게 총 3개의 NSG를 사용하면 각 계층의 요구 사항을 명확하게 분리하여 관리할 수 있습니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 395,
+    "question": "RG1에 할당된 Azure 정책으로 인해 가상 네트워크와 가상 머신 생성이 금지되어 있습니다. RG1에 VM2라는 새 가상 머신을 만들고 VNET1에 연결하려면 가장 먼저 무엇을 해야 합니까?",
+    "condition": "리소스:\n- RG1 (리소스 그룹)\n- VNET1 (가상 네트워크)",
+    "options": [
+      "A. 정책에서 `Microsoft.Compute/virtualMachines`를 제거합니다.",
+      "B. Azure Resource Manager 템플릿을 만듭니다.",
+      "C. VNET1에 서브넷을 추가합니다.",
+      "D. 정책에서 `Microsoft.Network/virtualNetworks`를 제거합니다."
+    ],
+    "answer": "A",
+    "explanation": "현재 정책이 `Microsoft.Compute/virtualMachines` 리소스 유형의 생성을 명시적으로 금지하고 있습니다. 따라서 RG1에 VM2를 만들려면 먼저 이 정책 할당을 수정하여 가상 머신 생성을 허용해야 합니다. 즉, 금지된 리소스 유형 목록에서 `Microsoft.Compute/virtualMachines`를 제거해야 합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 396,
+    "question": "온-프레미스 DNS 서버(Server1)의 adatum.com 영역(1,000개 레코드 포함)을 Azure DNS로 마이그레이션하려고 합니다. 관리 작업을 최소화하려면 어떤 도구를 사용해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. Azure CLI",
+      "B. Azure PowerShell",
+      "C. Azure Portal",
+      "D. DNS 관리자 콘솔"
+    ],
+    "answer": "A",
+    "explanation": "Azure CLI는 `az network dns zone import` 명령을 제공하여 표준 DNS 영역 파일을 가져와 Azure DNS 영역에 레코드를 자동으로 생성할 수 있습니다. 1,000개의 레코드를 수동으로 마이그레이션하는 것은 비효율적이므로, 영역 파일을 내보내고 CLI를 사용하여 가져오는 것이 관리 작업을 가장 크게 줄일 수 있는 방법입니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 397,
+    "question": "3개의 VM(VM1, VM2, VM3)에 대한 포트 80 및 443 트래픽을 분산하는 공용 부하 분산 장치가 있습니다. 모든 원격 데스크톱 프로토콜(RDP) 연결이 VM3으로만 전달되도록 하려면 무엇을 구성해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 인바운드 NAT 규칙",
+      "B. VM3을 위한 새 공용 부하 분산 장치",
+      "C. 프런트엔드 IP 구성",
+      "D. 부하 분산 규칙"
+    ],
+    "answer": "A",
+    "explanation": "인바운드 NAT 규칙은 부하 분산 장치의 특정 프런트엔드 포트로 들어오는 트래픽을 백엔드 풀의 특정 가상 머신으로 직접 전달하는 데 사용됩니다. RDP(포트 3389) 트래픽을 VM3으로만 보내려면, 해당 포트에 대한 인바운드 NAT 규칙을 만들고 대상을 VM3으로 지정하면 됩니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 398,
+    "question": "주어진 피어링 구성에 따라, VNet1의 VM은 VNet3의 VM과 통신할 수 있습니까? 그리고 VNet2의 VM은 VNet3의 VM과 통신할 수 있습니까?",
+    "condition": "피어링 구성:\n- VNet1 <-> VNet2 (게이트웨이 전송 허용)\n- VNet2 <-> VNet3 (게이트웨이 전송 허용)",
+    "options": [
+      "A. VNet1-VNet3 통신 가능, VNet2-VNet3 통신 가능",
+      "B. VNet1-VNet3 통신 가능, VNet2-VNet3 통신 불가능",
+      "C. VNet1-VNet3 통신 불가능, VNet2-VNet3 통신 가능",
+      "D. VNet1-VNet3 통신 불가능, VNet2-VNet3 통신 불가능"
+    ],
+    "answer": "C",
+    "explanation": "VNet2와 VNet3은 직접 피어링되어 있으므로 서로 통신할 수 있습니다. 그러나 가상 네트워크 피어링은 전이적(transitive)이지 않으므로, VNet1과 VNet3은 VNet2를 통해 자동으로 통신할 수 없습니다. VNet1과 VNet3 간의 통신을 위해서는 두 가상 네트워크 간에 직접 피어링을 설정해야 합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 399,
+    "question": "VM1(Windows Server 2019)이 contoso.com의 이름을 확인할 수 있지만 adatum.com의 이름은 확인할 수 없습니다. VM1이 adatum.com의 호스트 이름을 확인할 수 있도록 하려면 어떻게 해야 합니까?",
+    "condition": "DNS 구성:\n- 공용 DNS 영역: adatum.com\n- 프라이빗 DNS 영역: contoso.com\n- VNET1: contoso.com에 링크됨",
+    "options": [
+      "A. VM1의 DNS 접미사를 adatum.com으로 업데이트합니다.",
+      "B. 도메인 등록 기관에서 adatum.com의 이름 서버를 구성합니다.",
+      "C. contoso.com 영역에 SRV 레코드를 만듭니다.",
+      "D. link1에 대한 액세스 제어(IAM) 설정을 수정합니다."
+    ],
+    "answer": "B",
+    "explanation": "adatum.com은 Azure의 공용 DNS 영역입니다. 이 영역의 레코드가 전 세계적으로 확인되려면, 도메인 등록 기관(예: GoDaddy, Namecheap 등)의 DNS 설정에서 해당 도메인의 이름 서버(NS) 레코드를 Azure DNS가 제공하는 이름 서버 주소로 업데이트해야 합니다. 이를 위임(delegation)이라고 합니다."
+  },
+  {
+    "topic": "모니터링",
+    "question_no": 400,
+    "question": "온-프레미스 네트워크와 Azure VNet1 간에 사이트 간 VPN을 만들려고 합니다. 어떤 네 가지 작업을 순서대로 수행해야 합니까?",
+    "condition": "VNet1: 10.0.0.0/16, Subnet1: 10.0.0.0/24",
+    "options": [
+      "1. 가상 네트워크 게이트웨이를 만듭니다.",
+      "2. 로컬 네트워크 게이트웨이를 만듭니다.",
+      "3. 게이트웨이 서브넷을 만듭니다.",
+      "4. 연결을 만듭니다."
+    ],
+    "answer": "3, 1, 2, 4",
+    "explanation": "사이트 간 VPN을 설정하는 올바른 순서는 다음과 같습니다: 1. 가상 네트워크 게이트웨이가 배포될 전용 서브넷인 '게이트웨이 서브넷'을 만듭니다. 2. Azure 측의 VPN 엔드포인트인 '가상 네트워크 게이트웨이'를 만듭니다. 3. 온-프레미스 VPN 장치를 나타내는 '로컬 네트워크 게이트웨이'를 만듭니다. 4. 가상 네트워크 게이트웨이와 로컬 네트워크 게이트웨이 간에 '연결'을 만들어 터널을 설정합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 401,
+    "question": "VM1과 VM2의 사용자가 TCP 포트 80을 통해 인터넷의 웹사이트에 접속하는 것을 막으려면 어떻게 해야 합니까?",
+    "condition": "NSG 규칙:\n- DenyWebSites (아웃바운드): 우선순위 4096, 소스 Any, 대상 Service Tag 'Storage.WestEurope', 포트 80, 프로토콜 TCP, 작업 거부.",
+    "options": [
+      "A. 네트워크 인터페이스에서 NSG 연결을 해제합니다.",
+      "B. Port_80 인바운드 보안 규칙을 수정합니다.",
+      "C. NSG를 Subnet1에 연결합니다.",
+      "D. DenyWebSites 아웃바운드 보안 규칙을 수정합니다."
+    ],
+    "answer": "D",
+    "explanation": "현재 `DenyWebSites` 규칙은 대상이 'Storage.WestEurope' 서비스 태그로 매우 구체적으로 설정되어 있어 일반적인 인터넷 웹사이트 접속을 차단하지 않습니다. 모든 인터넷 웹사이트(포트 80)로의 아웃바운드 트래픽을 차단하려면 이 규칙의 대상을 'Service Tag'에서 'Internet'으로 변경해야 합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 402,
+    "question": "서로 다른 Azure AD 테넌트에 연결된 두 구독의 가상 네트워크(VNet1, VNet2)를 연결하려고 합니다. 가장 먼저 무엇을 해야 합니까?",
+    "condition": "구성:\n- 구독1 (테넌트1): VNet1 (10.0.0.0/16)\n- 구독2 (테넌트2): VNet2 (10.10.0.0/24)",
+    "options": [
+      "A. VM1을 구독2로 이동합니다.",
+      "B. VNet1을 구독2로 이동합니다.",
+      "C. VNet2의 주소 공간을 수정합니다.",
+      "D. 가상 네트워크 게이트웨이를 프로비저닝합니다."
+    ],
+    "answer": "D",
+    "explanation": "서로 다른 구독 및 테넌트에 있는 가상 네트워크는 직접 피어링할 수 없습니다. 이들을 연결하려면 각 가상 네트워크에 가상 네트워크 게이트웨이를 만들고 VNet-to-VNet VPN 연결을 설정해야 합니다. 따라서 가장 먼저 해야 할 일은 연결을 위한 게이트웨이를 프로비저닝하는 것입니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 403,
+    "question": "VM1을 가용성 영역에 만들 수 있도록 하려면 어떤 두 가지 설정을 수정해야 합니까?",
+    "condition": "VM1 계획:\n- 크기: Standard_B2s\n- OS 디스크: 표준 HDD\n- 관리 디스크 사용: 아니요\n- 가용성 옵션: 없음",
+    "options": [
+      "A. 관리 디스크 사용",
+      "B. OS 디스크 유형",
+      "C. 가용성 옵션",
+      "D. 크기",
+      "E. 이미지"
+    ],
+    "answer": "A, C",
+    "explanation": "가용성 영역을 사용하려면 가상 머신이 반드시 '관리 디스크'를 사용해야 합니다. 비관리 디스크는 지원되지 않습니다. 또한, 배포 시 '가용성 옵션'에서 '가용성 영역'을 선택하고 원하는 영역을 지정해야 합니다. 따라서 '관리 디스크 사용'을 '예'로 변경하고 '가용성 옵션'을 설정해야 합니다."
+  },
+  {
+    "topic": "가상 머신",
+    "question_no": 404,
+    "question": "VMSS1(가상 머신 확장 집합)에 VM1이라는 새 가상 머신을 추가하려고 합니다. VM1을 배포하는 데 어떤 리소스 그룹과 위치를 사용해야 합니까?",
+    "condition": "리소스:\n- RG1 (East US): VMSS1\n- RG2 (West US)",
+    "options": [
+      "A. 리소스 그룹: RG1, 위치: East US",
+      "B. 리소스 그룹: RG1, 위치: West US",
+      "C. 리소스 그룹: RG2, 위치: East US",
+      "D. 리소스 그룹: RG2, 위치: West US"
+    ],
+    "answer": "A",
+    "explanation": "가상 머신을 유연한 오케스트레이션 모드의 가상 머신 확장 집합에 추가하려면, 해당 가상 머신이 확장 집합과 동일한 리소스 그룹 및 동일한 위치(지역)에 있어야 합니다. VMSS1은 RG1과 East US에 있으므로, VM1도 RG1과 East US에 배포해야 합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 405,
+    "question": "주어진 피어링 구성에 따라 VNet1에서 VNet3으로, 그리고 VNet2에서 VNet3으로 패킷이 어떻게 라우팅됩니까?",
+    "condition": "피어링:\n- VNet1 <-> VNet2 (활성)\n- VNet2 <-> VNet3 (활성)\n- VNet1 <-> VNet3 (연결 끊김)",
+    "options": [
+      "A. VNet1 -> VNet3: 직접, VNet2 -> VNet3: 직접",
+      "B. VNet1 -> VNet3: VNet2 경유, VNet2 -> VNet3: 직접",
+      "C. VNet1 -> VNet3: 라우팅 안 됨, VNet2 -> VNet3: 직접",
+      "D. VNet1 -> VNet3: 라우팅 안 됨, VNet2 -> VNet3: VNet1 경유"
+    ],
+    "answer": "C",
+    "explanation": "VNet2와 VNet3은 직접 피어링되어 있으므로 트래픽은 직접 라우팅됩니다. 가상 네트워크 피어링은 전이적이지 않으므로 VNet1과 VNet3은 VNet2를 통해 통신할 수 없습니다. VNet1과 VNet3 간의 피어링 상태가 '연결 끊김'이므로 두 네트워크 간에는 트래픽이 라우팅되지 않습니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 406,
+    "question": "Computer2에서 VNet1으로의 지점-사이트 간 VPN 연결을 설정하려고 합니다. Azure AD 인증 정책을 수정하는 것이 목표를 달성합니까?",
+    "condition": "현재 연결은 자체 서명된 인증서를 사용합니다.",
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "현재 지점-사이트 간 VPN은 인증서 기반 인증을 사용하고 있습니다. Azure AD 인증 정책은 Azure AD 인증을 사용하는 VPN 연결에만 영향을 미칩니다. Computer2에서 연결을 설정하려면 Computer1에서 사용된 클라이언트 인증서를 내보내어 Computer2에 설치해야 합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 407,
+    "question": "Computer2에서 VNet1으로의 지점-사이트 간 VPN 연결을 설정하려고 합니다. Computer2를 Azure AD에 가입시키는 것이 목표를 달성합니까?",
+    "condition": "현재 연결은 자체 서명된 인증서를 사용합니다.",
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "장치를 Azure AD에 가입시키는 것은 장치 관리 및 조건부 액세스 정책과 관련이 있지만, 인증서 기반 VPN 연결 설정과는 직접적인 관련이 없습니다. 연결을 위해서는 유효한 클라이언트 인증서가 Computer2에 설치되어 있어야 합니다."
+  },
+  {
+    "topic": "리소스 관리",
+    "question_no": 408,
+    "question": "새로 생성되는 NSG가 가상 네트워크 간의 TCP 포트 8080을 자동으로 차단하도록 하려고 합니다. 리소스 잠금을 만들고 구독에 할당하는 것이 목표를 달성합니까?",
+    "condition": null,
+    "options": [
+      "A. 예",
+      "B. 아니요"
+    ],
+    "answer": "B",
+    "explanation": "리소스 잠금(Resource Locks)은 리소스의 우발적인 삭제나 수정을 방지하는 데 사용됩니다. NSG 규칙의 내용을 자동으로 구성하는 기능은 없습니다. 이 요구 사항을 충족하려면, 특정 NSG 규칙을 포함하도록 강제하는 Azure Policy를 만들고 구독에 할당해야 합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 409,
+    "question": "인터넷의 Computer1에서 VM1으로의 원격 데스크톱 연결이 실패합니다. 연결을 설정하기 위해 가장 먼저 무엇을 해야 합니까?",
+    "condition": "NSG 인바운드 규칙:\n- Rule1 (우선순위 100): 소스 VirtualNetwork, 대상 VirtualNetwork, 포트 Any, 작업 허용\n- DenyAllInBound (우선순위 65500): 소스 Any, 대상 Any, 포트 Any, 작업 거부",
+    "options": [
+      "A. RDP 규칙의 우선순위를 변경합니다.",
+      "B. 네트워크 인터페이스를 연결합니다.",
+      "C. DenyAllInBound 규칙을 삭제합니다.",
+      "D. VM1을 시작합니다."
+    ],
+    "answer": "B",
+    "explanation": "문제 설명에 따르면 `vm1173`이라는 네트워크 인터페이스를 추가했지만, 이 NIC가 VM1에 실제로 연결(attach)되었는지는 명시되지 않았습니다. 인터넷에서 VM으로 연결하려면 공용 IP가 할당된 NIC가 VM에 올바르게 연결되어 있어야 합니다. 또한, 인터넷からのRDP(TCP 3389)를 허용하는 인바운드 보안 규칙이 필요합니다. 현재 규칙에는 인터넷からのRDP 허용 규칙이 없습니다. *수정: 질문의 이미지(표시되지 않음)에는 일반적으로 RDP 규칙이 포함되어 있습니다. 가장 일반적인 실패 원인은 인터넷에서 RDP(TCP/3389)를 허용하는 우선순위가 높은 인바운드 규칙이 없는 것입니다. 따라서 새 규칙을 추가해야 합니다. 주어진 옵션 중에서는, 기존 RDP 규칙이 있다면 그 우선순위를 DenyAllInBound보다 높게 조정하는 것이 답이 될 수 있습니다. 하지만 가장 근본적인 것은 NIC 연결입니다.*"
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 410,
+    "question": "모든 가상 머신이 VM1의 DNS 서비스를 사용하여 DNS 이름을 확인할 수 있도록 하려면 어떻게 해야 합니까?",
+    "condition": "구성:\n- VNET1 (VM1 포함), VNET2 (VM2, VM3 포함), VNET3 (VM4, VM5 포함)\n- 각 VNet의 DNS 서버 설정: 기본 (Azure 제공)",
+    "options": [
+      "A. VM1에 조건부 전달자를 구성합니다.",
+      "B. VNET1에 서비스 엔드포인트를 추가합니다.",
+      "C. VNET2 및 VNET3에 서비스 엔드포인트를 추가합니다.",
+      "D. VNET1, VNET2, VNET3 간에 피어링을 구성합니다."
+    ],
+    "answer": "D",
+    "explanation": "기본적으로 서로 다른 가상 네트워크의 VM들은 통신할 수 없습니다. 모든 VM이 VM1의 DNS 서비스를 사용하려면, 먼저 모든 가상 네트워크가 서로 통신할 수 있어야 합니다. 이를 위해 VNet 간 피어링을 설정해야 합니다. 피어링이 설정된 후, VNet2와 VNet3의 DNS 서버 설정을 VM1의 개인 IP 주소로 변경해야 합니다."
+  },
+  {
+    "topic": "모니터링",
+    "question_no": 411,
+    "question": "주어진 Network Watcher IP 흐름 확인 결과에 따라, 10.10.1.4에서 VM1로의 RDP 연결과 10.10.2.4에서 VM1로의 RDP 연결 상태는 어떻습니까?",
+    "condition": "NSG1 인바운드 규칙:\n- 우선순위 100: 소스 10.10.1.0/24, 포트 Any, 대상 Any, 포트 3389, 프로토콜 TCP, 작업 허용\n- 우선순위 200: 소스 10.10.2.0/24, 포트 Any, 대상 Any, 포트 3389, 프로토콜 TCP, 작업 거부",
+    "options": [
+      "A. 10.10.1.4 연결 허용, 10.10.2.4 연결 허용",
+      "B. 10.10.1.4 연결 허용, 10.10.2.4 연결 거부",
+      "C. 10.10.1.4 연결 거부, 10.10.2.4 연결 허용",
+      "D. 10.10.1.4 연결 거부, 10.10.2.4 연결 거부"
+    ],
+    "answer": "B",
+    "explanation": "IP 흐름 확인은 NSG 규칙을 기반으로 트래픽 허용 여부를 테스트합니다. 10.10.1.4からのRDP 트래픽은 우선순위 100 규칙과 일치하므로 허용됩니다. 10.10.2.4からのRDP 트래픽은 우선순위 200 규칙과 일치하므로 거부됩니다. NSG 규칙은 우선순위 번호가 낮을수록 먼저 처리됩니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 412,
+    "question": "인터넷에서 VM으로의 RDP 접근을 차단하되, 온-프레미스 네트워크에서의 RDP 접근은 허용하고, 모든 애플리케이션에 대한 인터넷 사용자의 접근은 계속 허용하려면 어떻게 해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 로컬 네트워크 게이트웨이의 주소 공간을 수정합니다.",
+      "B. 서브넷에 연결된 NSG에 거부 규칙을 만듭니다.",
+      "C. VM에서 공용 IP 주소를 제거합니다.",
+      "D. 서브넷의 주소 공간을 수정합니다."
+    ],
+    "answer": "B",
+    "explanation": "네트워크 보안 그룹(NSG)을 사용하여 트래픽을 제어할 수 있습니다. 다음과 같은 규칙을 조합하여 요구 사항을 충족할 수 있습니다: 1. 우선순위가 높은 규칙으로 온-프레미스 네트워크의 IP 주소 범위에서 들어오는 RDP(TCP 3389) 트래픽을 허용합니다. 2. 그보다 우선순위가 낮은 규칙으로 인터넷 서비스 태그에서 들어오는 RDP 트래픽을 거부합니다. 3. 애플리케이션 포트(예: 443)는 인터넷에서 계속 허용합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 413,
+    "question": "애플리케이션 보안 그룹(ASG1)을 VM1에 적용하려면 어떻게 해야 합니까?",
+    "condition": "리소스:\n- VM1, NIC1\n- NSG1, ASG1",
+    "options": [
+      "A. NIC1을 ASG1과 연결합니다.",
+      "B. ASG1의 속성을 수정합니다.",
+      "C. NSG1의 속성을 수정합니다."
+    ],
+    "answer": "A",
+    "explanation": "애플리케이션 보안 그룹(ASG)은 VM들을 논리적으로 그룹화하여 네트워크 보안 정책을 정의하는 데 사용됩니다. VM을 ASG에 포함시키려면 해당 VM의 네트워크 인터페이스(NIC)를 ASG와 연결(associate)해야 합니다. 그런 다음 NSG 규칙의 소스 또는 대상으로 이 ASG를 지정할 수 있습니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 414,
+    "question": "ExpressRoute 회선 장애 시 자동 장애 조치를 위해 VNet1을 온-프레미스 네트워크에 사이트 간 VPN으로 연결하려고 합니다. 비용을 최소화하려면 어떤 두 가지 조치를 취해야 합니까?",
+    "condition": null,
+    "options": [
+      "A. 연결을 만듭니다.",
+      "B. 로컬 사이트 VPN 게이트웨이를 만듭니다.",
+      "C. VpnGw1 SKU를 사용하는 VPN 게이트웨이를 만듭니다.",
+      "D. 게이트웨이 서브넷을 만듭니다.",
+      "E. 기본 SKU를 사용하는 VPN 게이트웨이를 만듭니다."
+    ],
+    "answer": "D, E",
+    "explanation": "사이트 간 VPN을 설정하려면 먼저 가상 네트워크에 '게이트웨이 서브넷'을 만들어야 합니다. 그런 다음 가상 네트워크 게이트웨이를 배포해야 합니다. ExpressRoute의 백업용으로 사용되며 비용 최소화가 요구 사항이므로, 가장 저렴한 '기본(Basic)' SKU의 VPN 게이트웨이를 만드는 것이 적합합니다."
+  },
+  {
+    "topic": "네트워킹",
+    "question_no": 415,
+    "question": "VNet1은 VNet2와 피어링되어 있고, VNet2는 VNet1과 피어링되어 있습니다. VNet1의 피어링 설정에서 '전송된 트래픽 허용'이 활성화되어 있고, VNet2의 설정에서는 비활성화되어 있습니다. 이 구성의 결과는 무엇입니까?",
+    "condition": null,
+    "options": [
+      "A. VNet1의 VM은 VNet2의 VM에 연결할 수 없습니다.",
+      "B. VNet1의 VM은 VNet2의 VM에 연결할 수 있습니다.",
+      "C. VNet1과 VNet2의 VM은 서로 연결할 수 없습니다.",
+      "D. VNet1과 VNet2의 VM은 서로 연결할 수 있습니다."
+    ],
+    "answer": "D",
+    "explanation": "'전송된 트래픽 허용' 설정은 피어링된 네트워크를 통해 다른 네트워크(예: 온-프레미스)로 트래픽을 전달(transit)하는 것과 관련이 있습니다. 피어링된 두 가상 네트워크(VNet1, VNet2) 내의 VM 간 직접 통신에는 영향을 주지 않습니다. 피어링 상태가 '연결됨'이므로 두 VNet의 VM들은 서로 통신할 수 있습니다."
+  }
+  ]
